@@ -7,7 +7,7 @@ CLI for running Human Made utilities and commands.
 
 You need Node v5 or later.
 
-```
+```sh
 # Install globally:
 npm install -g @humanmade/cli
 
@@ -17,7 +17,7 @@ hm
 
 You may also want to install the autocompletions (Bash only):
 
-```
+```sh
 hm completion >> ~/.bashrc
 ```
 
