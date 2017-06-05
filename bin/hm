@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+"use strict";
+const loudRejection = require('loud-rejection');
+const yargs = require( 'yargs' );
+
+const csCommand = require( '../lib/commands/cs' );
+
+const csCallback = (args) => {
+	console.log('cs stuff');
+};
+
+const configure = yargs => {
+	// Global options.
+	const globalCommand = yargs.version( '0.0.1' ).help();
+
+	// "cs" command.
+	yargs.command(
+		'cs',
+		'Coding standards commands',
+		csCommand
+	);
+
+	yargs.command(
+		'cli',
+		'Meta CLI commands',
+		command => {
+		}
+	);
+
+	yargs.command(
+		'completion',
+		'Shell autocompletion',
+		command => {
+			command.showCompletionScript();
+		}
+	);
+
+	// Require at least one subcommand.
+	globalCommand.demandCommand( 1 );
+
+	return globalCommand;
+};
+
+const main = argv => {
+	// Install handlers.
+	loudRejection();
+
+	// Configure parser.
+	const parser = configure( yargs );
+
+	// Run.
+	parser.argv;
+}
+
+main( process.argv );
