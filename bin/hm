@@ -37,6 +37,7 @@ const configure = yargs => {
 
 	// Require at least one subcommand.
 	globalCommand.demandCommand( 1 );
+	globalCommand.strict();
 
 	return globalCommand;
 };
