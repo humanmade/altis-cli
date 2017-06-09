@@ -10,5 +10,12 @@
     "loud-rejection": "^1.6.0",
     "open": "0.0.5",
     "yargs": "^8.0.1"
-  }
+  },
+  "bin": {
+    "hm": "./bin/hm"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ]
 }
