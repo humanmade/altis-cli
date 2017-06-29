@@ -5,6 +5,8 @@ const yargs = require( 'yargs' );
 
 const csCommand = require( '../lib/commands/cs' );
 const githubCommand = require( '../lib/commands/github' );
+const issuesCommand = require( '../lib/commands/issues' );
+const prsCommand = require( '../lib/commands/prs' );
 
 const csCallback = (args) => {
 	console.log('cs stuff');
@@ -40,6 +42,18 @@ const configure = yargs => {
 		'github',
 		'GitHub connection commands',
 		githubCommand
+	);
+
+	yargs.command(
+		'issues',
+		'Project issues',
+		issuesCommand
+	);
+
+	yargs.command(
+		'prs',
+		'Project PRs',
+		prsCommand
 	);
 
 	// Require at least one subcommand.
