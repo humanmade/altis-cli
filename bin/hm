@@ -72,6 +72,12 @@ const configure = yargs => {
 		testsCommand
 	);
 
+	yargs.command(
+		'vantage',
+		'Vantage commands',
+		require( '../lib/commands/vantage' )
+	);
+
 	// Require at least one subcommand.
 	globalCommand.demandCommand( 1 );
 	globalCommand.strict();
