@@ -46,6 +46,12 @@ Always use `hm help` for the most up-to-date list of commands.
 * `tests` - Unit testing helpers.
 	* `add` - Add unit tests to your repo.
 
+## Credits
+
+Created by Ryan McCue to make your day better.
+
+Licensed under the MIT license. Copyright 2017 Human Made.
+
 ```
       :+oo/      .hmNh    oyy. /dMMm:   /syo.
    +dMMMMMMN.    oMMMy   :MMM+mMMMMMN oNMMMMm
