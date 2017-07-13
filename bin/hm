@@ -5,6 +5,7 @@ const pkg = require('../package.json');
 const updateNotifier = require('update-notifier');
 const yargs = require( 'yargs' );
 
+const Config = require( '../lib/config' );
 const csCommand = require( '../lib/commands/cs' );
 const githubCommand = require( '../lib/commands/github' );
 const issuesCommand = require( '../lib/commands/issues' );
@@ -96,7 +97,11 @@ const main = argv => {
 	const parser = configure( yargs );
 
 	// Run.
-	parser.argv;
+	const config = new Config();
+	config.load().then(() => {
+		// Parse arguments, and pass in config.
+		parser.parse( argv.slice(2), { config });
+	});
 }
 
 main( process.argv );
