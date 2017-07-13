@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 "use strict";
+const chalk = require( 'chalk' );
+const inquirer = require( 'inquirer' );
 const loudRejection = require('loud-rejection');
 const pkg = require('../package.json');
 const updateNotifier = require('update-notifier');
@@ -97,10 +99,32 @@ const main = argv => {
 
 	// Run.
 	const config = new Config();
-	config.load().then(() => {
-		// Parse arguments, and pass in config.
-		parser.parse( argv.slice(2), { config });
-	});
+	config.load()
+		.catch(err => {
+			process.stderr.write( chalk.bold( `Error loading your configuration file from\n  `) + config.path + '\n\n' );
+			process.stderr.write( chalk.dim( '→ ' ) + chalk.red( err.toString() ) + '\n\n' );
+			process.stderr.write( 'I can reset your configuration, but you will need to run the setup process again.' + '\n\n' );
+
+			return inquirer.prompt([
+				{
+					type: "confirm",
+					name: "reset",
+					message: "Reset configuration?",
+					default: false,
+				}
+			]).then( ({ reset }) => {
+				if ( ! reset ) {
+					throw err;
+				}
+
+				process.stderr.write( '\n' );
+				return config.reset();
+			});
+		})
+		.then(() => {
+			// Parse arguments, and pass in config.
+			parser.parse( argv.slice(2), { config });
+		});
 }
 
 main( process.argv );
