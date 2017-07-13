@@ -29,9 +29,10 @@ Always use `hm help` for the most up-to-date list of commands.
 	* `add` - Add coding standards to an existing repo.
 	* `run` - Run coding standards on the current repo.
 * `completion` - Bash auto-completion script.
-* `github` - GitHub helpers.
-	* `reset` - Reset your GitHub token for the CLI.
-	* `status` - Check whether the CLI has you logged in.
+* `config` - CLI configuration.
+	* `reset` - Reset all configuration.
+	* `setup` - Set or change various configuration.
+	* `status` - Check what you've configured.
 * `issues` - Repo issue helpers.
 	* `list` - List open issues on the project's repo.
 	* `open` - Open an issue in your browser.
