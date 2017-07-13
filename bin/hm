@@ -7,7 +7,6 @@ const yargs = require( 'yargs' );
 
 const Config = require( '../lib/config' );
 const csCommand = require( '../lib/commands/cs' );
-const githubCommand = require( '../lib/commands/github' );
 const issuesCommand = require( '../lib/commands/issues' );
 const prsCommand = require( '../lib/commands/prs' );
 const repoCommand = require( '../lib/commands/repo' );
@@ -44,9 +43,9 @@ const configure = yargs => {
 	);
 
 	yargs.command(
-		'github',
-		'GitHub connection commands',
-		githubCommand
+		'config',
+		'Configuration commands',
+		require( '../lib/commands/config' )
 	);
 
 	yargs.command(
