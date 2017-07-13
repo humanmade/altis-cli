@@ -72,6 +72,12 @@ const configure = yargs => {
 		testsCommand
 	);
 
+	yargs.command(
+		'stack',
+		'Stack commands',
+		require( '../lib/commands/stack' )
+	);
+
 	// Require at least one subcommand.
 	globalCommand.demandCommand( 1 );
 	globalCommand.strict();
