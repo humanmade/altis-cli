@@ -29,9 +29,10 @@ Always use `hm help` for the most up-to-date list of commands.
 	* `add` - Add coding standards to an existing repo.
 	* `run` - Run coding standards on the current repo.
 * `completion` - Bash auto-completion script.
-* `github` - GitHub helpers.
-	* `reset` - Reset your GitHub token for the CLI.
-	* `status` - Check whether the CLI has you logged in.
+* `config` - CLI configuration.
+	* `reset` - Reset all configuration.
+	* `setup` - Set or change various configuration.
+	* `status` - Check what you've configured.
 * `issues` - Repo issue helpers.
 	* `list` - List open issues on the project's repo.
 	* `open` - Open an issue in your browser.
@@ -44,3 +45,27 @@ Always use `hm help` for the most up-to-date list of commands.
 	* `list` - List all available stacks.
 * `tests` - Unit testing helpers.
 	* `add` - Add unit tests to your repo.
+
+## Credits
+
+Created by Ryan McCue to make your day better.
+
+Licensed under the MIT license. Copyright 2017 Human Made.
+
+```
+      :+oo/      .hmNh    oyy. /dMMm:   /syo.
+   +dMMMMMMN.    oMMMy   :MMM+mMMMMMN oNMMMMm
+  mMNo-.dMMM+    dMMM+   oMMMMM+ dMMMmMdhMMMN
+  ++    sMMMo    NMMM.   yMMMM:  hMMMM+ .MMMd
+        yMMM+   .MMMM:/+oNMMMs   NMMMo  :MMMs
+        hMMMo/oydMMMMMMMMMMMM.   MMMN   oMMM+
+       /NMMMMMMNmMMMh-. .MMMd   :MMMh   yMMM-
+    +dMMMMMM/-  oMMMo   :MMMs   +MMMo   dMMM
+  oNMMy+MMMN    sMMMo   +MMM+   sMMM:   mMMM
+.mMMh. /MMMh    sMMMo   sMMM:   +ddy    hMMM-
+hMMy   sMMM+    +MMMh   hMMM.           :MMMNs+os
+MMM-   NMMN     .MMMM:  -/:.             :hNMMMMh
+dMMh:/mMMN:      +MMMMy:..-/s.               ..
+ yMMMMMMy.        -hMMMMMMMNh-
+   -/:-              -///:.
+```
