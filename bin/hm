@@ -1,16 +1,36 @@
 #!/usr/bin/env node
 "use strict";
+const chalk = require( 'chalk' );
+const inquirer = require( 'inquirer' );
 const loudRejection = require('loud-rejection');
 const pkg = require('../package.json');
 const updateNotifier = require('update-notifier');
 const yargs = require( 'yargs' );
 
+const Config = require( '../lib/config' );
 const csCommand = require( '../lib/commands/cs' );
-const githubCommand = require( '../lib/commands/github' );
 const issuesCommand = require( '../lib/commands/issues' );
 const prsCommand = require( '../lib/commands/prs' );
 const repoCommand = require( '../lib/commands/repo' );
 const testsCommand = require( '../lib/commands/tests' );
+
+const logo = chalk.red(`
+      :+oo/      .hmNh    oyy. /dMMm:   /syo.
+   +dMMMMMMN.    oMMMy   :MMM+mMMMMMN oNMMMMm
+  mMNo-.dMMM+    dMMM+   oMMMMM+ dMMMmMdhMMMN
+  ++    sMMMo    NMMM.   yMMMM:  hMMMM+ .MMMd
+        yMMM+   .MMMM:/+oNMMMs   NMMMo  :MMMs
+        hMMMo/oydMMMMMMMMMMMM.   MMMN   oMMM+
+       /NMMMMMMNmMMMh-. .MMMd   :MMMh   yMMM-
+    +dMMMMMM/-  oMMMo   :MMMs   +MMMo   dMMM
+  oNMMy+MMMN    sMMMo   +MMM+   sMMM:   mMMM
+.mMMh. /MMMh    sMMMo   sMMM:   +ddy    hMMM-
+hMMy   sMMM+    +MMMh   hMMM.           :MMMNs+os
+MMM-   NMMN     .MMMM:  -/:.             :hNMMMMh
+dMMh:/mMMN:      +MMMMy:..-/s.               ..
+ yMMMMMMy.        -hMMMMMMMNh-
+   -/:-              -///:.
+`);
 
 const csCallback = (args) => {
 	console.log('cs stuff');
@@ -43,9 +63,9 @@ const configure = yargs => {
 	);
 
 	yargs.command(
-		'github',
-		'GitHub connection commands',
-		githubCommand
+		'config',
+		'Configuration commands',
+		require( '../lib/commands/config' )
 	);
 
 	yargs.command(
@@ -96,7 +116,60 @@ const main = argv => {
 	const parser = configure( yargs );
 
 	// Run.
-	parser.argv;
+	const config = new Config();
+	config.load()
+		.catch(err => {
+			process.stderr.write( chalk.bold( `Error loading your configuration file from\n  `) + config.path + '\n\n' );
+			process.stderr.write( chalk.dim( '→ ' ) + chalk.red( err.toString() ) + '\n\n' );
+			process.stderr.write( 'I can reset your configuration, but you will need to run the setup process again.' + '\n\n' );
+
+			return inquirer.prompt([
+				{
+					type: "confirm",
+					name: "reset",
+					message: "Reset configuration?",
+					default: false,
+				}
+			]).then( ({ reset }) => {
+				if ( ! reset ) {
+					throw err;
+				}
+
+				process.stderr.write( '\n' );
+				return config.reset();
+			});
+		})
+		.then(() => {
+			if ( config.get( 'didSetup' ) ) {
+				return;
+			}
+
+			process.stderr.write( chalk.bold( 'Welcome to hm-cli!\n\n' ) );
+			process.stderr.write( logo + '\n\n' );
+
+			return inquirer.prompt([
+				{
+					type: "confirm",
+					name: "runSetup",
+					message: "Run initial setup?",
+					default: true,
+				}
+			]).then( ({ runSetup }) => {
+				if ( ! runSetup ) {
+					return;
+				}
+
+				const configure = require( '../lib/commands/config/setup' );
+				return configure( { config } );
+			}).then(() => {
+				process.stderr.write( `Run ${chalk.yellow('hm config setup')} at any time to run setup.\n\n` );
+				return config.set( 'didSetup', true );
+			});
+		})
+		.then(() => {
+			// Parse arguments, and pass in config.
+			parser.parse( argv.slice(2), { config });
+		});
 }
 
 main( process.argv );
