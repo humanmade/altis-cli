@@ -161,6 +161,9 @@ const main = argv => {
 
 				const configure = require( '../lib/commands/config/setup' );
 				return configure( { config } );
+			}).then(() => {
+				process.stderr.write( `Run ${chalk.yellow('hm config setup')} at any time to run setup.\n\n` );
+				return config.set( 'didSetup', true );
 			});
 		})
 		.then(() => {
