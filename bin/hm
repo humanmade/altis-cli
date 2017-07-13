@@ -38,7 +38,7 @@ const csCallback = (args) => {
 
 const configure = yargs => {
 	// Global options.
-	const globalCommand = yargs.version( '0.0.1' ).help();
+	const globalCommand = yargs.version().help();
 
 	// "cs" command.
 	yargs.command(
