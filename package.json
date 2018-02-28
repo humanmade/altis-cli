@@ -11,7 +11,6 @@
     "diff": "^3.2.0",
     "ghauth": "^3.2.1",
     "github-slug": "^2.0.0",
-    "http-ssh-agent": "^1.0.4",
     "indent-string": "^3.2.0",
     "inquirer": "^3.0.6",
     "js-yaml": "^3.8.4",
