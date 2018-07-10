@@ -75,6 +75,12 @@ const configure = yargs => {
 	);
 
 	yargs.command(
+		'project',
+		'Project commands',
+		require( '../lib/commands/project' )
+	);
+
+	yargs.command(
 		'prs',
 		'Project PRs',
 		prsCommand
