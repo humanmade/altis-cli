@@ -150,6 +150,11 @@ const main = argv => {
 				return;
 			}
 
+			if ( ! process.stdout.isTTY ) {
+				process.stderr.write( 'hm-cli not configured. Run `hm` in an interactive terminal to set it up.\n' );
+				process.exit( 1 );
+			}
+
 			process.stderr.write( chalk.bold( 'Welcome to hm-cli!\n\n' ) );
 			process.stderr.write( logo + '\n\n' );
 
