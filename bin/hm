@@ -123,8 +123,8 @@ const main = argv => {
 	const parser = configure( yargs );
 
 	// Run.
-	const cache = new Cache();
 	const config = new Config();
+	config.cache = new Cache();
 	config.load()
 		.catch(err => {
 			process.stderr.write( chalk.bold( `Error loading your configuration file from\n  `) + config.path + '\n\n' );
@@ -180,7 +180,7 @@ const main = argv => {
 			});
 		})
 		.then( () => {
-			return cache.load().catch( err => {
+			return config.cache.load().catch( err => {
 				process.stderr.write( chalk.bold( `Error loading your cache file from\n  `) + cache.path + '\n\n' );
 				process.stderr.write( 'Resetting cache.' + '\n\n' );
 				return cache.reset();
