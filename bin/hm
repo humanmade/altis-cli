@@ -51,8 +51,7 @@ const configure = yargs => {
 	yargs.command(
 		'cli',
 		'Meta CLI commands',
-		command => {
-		}
+		require( '../lib/commands/cli' )
 	);
 
 	yargs.command(
