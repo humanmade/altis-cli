@@ -32,10 +32,6 @@ dMMh:/mMMN:      +MMMMy:..-/s.               ..
    -/:-              -///:.
 `);
 
-const csCallback = (args) => {
-	console.log('cs stuff');
-};
-
 const configure = yargs => {
 	// Global options.
 	const globalCommand = yargs.version().help();
