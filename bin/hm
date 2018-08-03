@@ -7,6 +7,7 @@ const pkg = require('../package.json');
 const updateNotifier = require('update-notifier');
 const yargs = require( 'yargs' );
 
+const Cache = require( '../lib/cache' );
 const Config = require( '../lib/config' );
 const csCommand = require( '../lib/commands/cs' );
 const issuesCommand = require( '../lib/commands/issues' );
@@ -122,6 +123,7 @@ const main = argv => {
 	const parser = configure( yargs );
 
 	// Run.
+	const cache = new Cache();
 	const config = new Config();
 	config.load()
 		.catch(err => {
@@ -177,6 +179,13 @@ const main = argv => {
 				return config.set( 'didSetup', true );
 			});
 		})
+		.then( () => {
+			return cache.load().catch( err => {
+				process.stderr.write( chalk.bold( `Error loading your cache file from\n  `) + cache.path + '\n\n' );
+				process.stderr.write( 'Resetting cache.' + '\n\n' );
+				return cache.reset();
+			} );
+		} )
 		.then(() => {
 			// Parse arguments, and pass in config.
 			parser.parse( argv.slice(2), { config });
