@@ -9,11 +9,6 @@ const yargs = require( 'yargs' );
 
 const Cache = require( '../lib/cache' );
 const Config = require( '../lib/config' );
-const csCommand = require( '../lib/commands/cs' );
-const issuesCommand = require( '../lib/commands/issues' );
-const prsCommand = require( '../lib/commands/prs' );
-const repoCommand = require( '../lib/commands/repo' );
-const testsCommand = require( '../lib/commands/tests' );
 
 const logo = chalk.red(`
       :+oo/      .hmNh    oyy. /dMMm:   /syo.
@@ -33,10 +28,6 @@ dMMh:/mMMN:      +MMMMy:..-/s.               ..
    -/:-              -///:.
 `);
 
-const csCallback = (args) => {
-	console.log('cs stuff');
-};
-
 const configure = yargs => {
 	// Global options.
 	const globalCommand = yargs.version().help();
@@ -45,7 +36,7 @@ const configure = yargs => {
 	yargs.command(
 		'cs',
 		'Coding standards commands',
-		csCommand
+		require( '../lib/commands/cs' )
 	);
 
 	yargs.command(
@@ -71,7 +62,7 @@ const configure = yargs => {
 	yargs.command(
 		'issues',
 		'Project issues',
-		issuesCommand
+		require( '../lib/commands/issues' )
 	);
 
 	yargs.command(
@@ -83,19 +74,19 @@ const configure = yargs => {
 	yargs.command(
 		'prs',
 		'Project PRs',
-		prsCommand
+		require( '../lib/commands/prs' )
 	);
 
 	yargs.command(
 		'repo',
 		'Repository commands',
-		repoCommand
+		require( '../lib/commands/repo' )
 	);
 
 	yargs.command(
 		'tests',
 		'Unit tests commands',
-		testsCommand
+		require( '../lib/commands/tests' )
 	);
 
 	yargs.command(
