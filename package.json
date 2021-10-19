@@ -1,6 +1,6 @@
 {
   "name": "@humanmade/cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "dependencies": {
     "@humanmade/ssm": "^0.0.1",
     "ansi-escapes": "^2.0.0",
