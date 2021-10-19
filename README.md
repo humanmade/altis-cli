@@ -41,8 +41,15 @@ Always use `hm help` for the most up-to-date list of commands.
 * `repo` - Repo helpers.
 	* `open` - Open the repo in your browser.
 * `stack` - HM Stack/hosting helpers.
-	* `deploy` - Deploy a stack.
-	* `list` - List all available stacks.
+	* `list` - List stacks available in our hosting.
+	* `backup [stack]` - Create a new backup for the stack.
+	* `backups [stack]` - List backups for the stack.
+	* `deploy [stack]` - Deploy a given stack.
+	* `info [stack]` - Get information for a stack.
+	* `sequel [stack]` - Connect to stack database via Sequel Pro.
+	* `scp <src> <dest>` - Copy a file to/from a stack.
+	* `ssh [stack]` - SSH into a stack.
+	* `php-logs [stack]` - Show PHP logs for a stack.
 * `tests` - Unit testing helpers.
 	* `add` - Add unit tests to your repo.
 
