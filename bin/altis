@@ -5,11 +5,10 @@ const inquirer = require( 'inquirer' );
 const loudRejection = require('loud-rejection');
 const pkg = require('../package.json');
 const updateNotifier = require('update-notifier');
-const yargs = require( 'yargs' );
 
+const configure = require( '../lib/commands' );
 const Cache = require( '../lib/cache' );
 const Config = require( '../lib/config' );
-const registerCommands = require( '../lib/commands' );
 
 const logo = chalk.red(`
       :+oo/      .hmNh    oyy. /dMMm:   /syo.
@@ -29,19 +28,6 @@ dMMh:/mMMN:      +MMMMy:..-/s.               ..
    -/:-              -///:.
 `);
 
-const configure = yargs => {
-	// Global options.
-	const globalCommand = yargs.version().help();
-
-	registerCommands( yargs );
-
-	// Require at least one subcommand.
-	globalCommand.demandCommand( 1 );
-	globalCommand.strict();
-
-	return globalCommand;
-};
-
 const main = argv => {
 	// Install handlers.
 	loudRejection();
@@ -50,7 +36,7 @@ const main = argv => {
 	updateNotifier({ pkg }).notify();
 
 	// Configure parser.
-	const parser = configure( yargs );
+	const parser = configure();
 
 	// Run.
 	const config = new Config();
