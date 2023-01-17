@@ -29,7 +29,7 @@
     "yargs": "~17"
   },
   "bin": {
-    "altis": "./bin/altis"
+    "altis": "./bin/altis-cli"
   },
   "files": [
     "bin",
