@@ -38,7 +38,7 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 
 Created by Ryan McCue to make your day better.
 
-Licensed under the MIT license. Copyright 2023 Human Made.
+Licensed under the MIT license. Copyright 2017-2023 Human Made.
 
 ```
       :+oo/      .hmNh    oyy. /dMMm:   /syo.
