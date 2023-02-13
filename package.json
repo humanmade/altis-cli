@@ -1,6 +1,6 @@
 {
-  "name": "altis",
-  "version": "0.0.1",
+  "name": "altis-cli",
+  "version": "1.0.0-beta",
   "dependencies": {
     "@humanmade/ssm": "^0.0.1",
     "ansi-escapes": "^2.0.0",
@@ -30,7 +30,7 @@
     "yargs": "~17"
   },
   "bin": {
-    "altis": "./bin/altis-cli"
+    "altis-cli": "./bin/altis-cli"
   },
   "files": [
     "bin",
