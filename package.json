@@ -15,21 +15,22 @@
     "isomorphic-ws": "^4.0.1",
     "log-update": "^2.0.0",
     "loud-rejection": "^1.6.0",
-    "node-fetch": "^1.7.1",
+    "node-cmd": "^5.0.0",
+    "node-fetch": "^2.6.8",
     "once": "^1.4.0",
-    "open": "0.0.5",
+    "open": "^8.4.0",
     "ora": "^1.3.0",
     "progress-stream": "^2.0.0",
     "request": "^2.81.0",
     "rimraf": "^3.0.2",
     "split2": "^2.1.1",
     "unused-filename": "^1.0.0",
-    "update-notifier": "^2.2.0",
+    "update-notifier": "^5.0.1",
     "ws": "^7.4.5",
     "yargs": "~17"
   },
   "bin": {
-    "altis": "./bin/altis"
+    "altis": "./bin/altis-cli"
   },
   "files": [
     "bin",
