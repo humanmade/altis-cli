@@ -1,4 +1,4 @@
-# @humanmade/altis-cli
+# altis-cli
 
 CLI for running Altis utilities and commands.
 
