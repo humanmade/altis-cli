@@ -1,4 +1,4 @@
-# @humanmade/altis-cli
+# altis-cli
 
 CLI for running Altis utilities and commands.
 
@@ -9,10 +9,13 @@ You need Node v18 or later.
 
 ```sh
 # Install globally:
-npm install -g @humanmade/altis-cli
+npm install -g altis-cli
 
 # Run it:
 altis-cli
+
+# Run with npx:
+npx altis-cli
 ```
 
 ## Available Commands
