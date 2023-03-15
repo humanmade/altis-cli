@@ -9,7 +9,7 @@ You need Node v18 or later.
 
 ```sh
 # Install globally:
-npm install -g @humanmade/altis-cli
+npm install -g altis-cli
 
 # Run it:
 altis-cli
