@@ -13,6 +13,9 @@ npm install -g altis-cli
 
 # Run it:
 altis-cli
+
+# Run with npx:
+npx altis-cli
 ```
 
 ## Available Commands
