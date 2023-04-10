@@ -10,24 +10,6 @@ const configure = require( '../lib/commands' );
 const Cache = require( '../lib/cache' );
 const Config = require( '../lib/config' );
 
-const logo = chalk.red(`
-      :+oo/      .hmNh    oyy. /dMMm:   /syo.
-   +dMMMMMMN.    oMMMy   :MMM+mMMMMMN oNMMMMm
-  mMNo-.dMMM+    dMMM+   oMMMMM+ dMMMmMdhMMMN
-  ++    sMMMo    NMMM.   yMMMM:  hMMMM+ .MMMd
-        yMMM+   .MMMM:/+oNMMMs   NMMMo  :MMMs
-        hMMMo/oydMMMMMMMMMMMM.   MMMN   oMMM+
-       /NMMMMMMNmMMMh-. .MMMd   :MMMh   yMMM-
-    +dMMMMMM/-  oMMMo   :MMMs   +MMMo   dMMM
-  oNMMy+MMMN    sMMMo   +MMM+   sMMM:   mMMM
-.mMMh. /MMMh    sMMMo   sMMM:   +ddy    hMMM-
-hMMy   sMMM+    +MMMh   hMMM.           :MMMNs+os
-MMM-   NMMN     .MMMM:  -/:.             :hNMMMMh
-dMMh:/mMMN:      +MMMMy:..-/s.               ..
- yMMMMMMy.        -hMMMMMMMNh-
-   -/:-              -///:.
-`);
-
 const main = argv => {
 	// Install handlers.
 	loudRejection();
@@ -69,12 +51,11 @@ const main = argv => {
 			}
 
 			if ( ! process.stdout.isTTY ) {
-				process.stderr.write( 'hm-cli not configured. Run `hm` in an interactive terminal to set it up.\n' );
+				process.stderr.write( 'altis-cli not configured. Run `altis-cli` in an interactive terminal to set it up.\n' );
 				process.exit( 1 );
 			}
 
-			process.stderr.write( chalk.bold( 'Welcome to hm-cli!\n\n' ) );
-			process.stderr.write( logo + '\n\n' );
+			process.stderr.write( chalk.bold( 'Welcome to altis-cli!\n\n' ) );
 
 			return inquirer.prompt([
 				{
@@ -91,7 +72,7 @@ const main = argv => {
 				const configure = require( '../lib/commands/config/setup' );
 				return configure.handler( { config } );
 			}).then(() => {
-				process.stderr.write( `Run ${chalk.yellow('hm config setup')} at any time to run setup.\n\n` );
+				process.stderr.write( `Run ${chalk.yellow('altis-cli config setup')} at any time to run setup.\n\n` );
 				return config.set( 'didSetup', true );
 			});
 		})
