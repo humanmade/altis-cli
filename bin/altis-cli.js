@@ -22,7 +22,7 @@ const main = async argv => {
 	// Check updates.
 	updateNotifier({ pkg }).notify();
 
-	// Configure parser (await subcommand loading first!)
+	// Configure parser.
 	const parser = await configure();
 
 	// Run.
@@ -48,6 +48,7 @@ const main = async argv => {
 		}
 		process.stderr.write('\n');
 		await config.reset();
+
 	}
 
 	if (!config.get('didSetup')) {
@@ -79,7 +80,7 @@ const main = async argv => {
 	}
 
 	// Parse arguments, and pass in config.
-	parser.parse(argv.slice(2), { config });
-};
+	await parser.parse(argv.slice(2), { config });
+}
 
 main(process.argv);
