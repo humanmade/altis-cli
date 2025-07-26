@@ -11,7 +11,7 @@ assignees: ''
 - Include the purpose of this PR.
 - Include a brief description of the what and why of this change.
 - Include a link to a GH issue, if relevant.
-- Fixes #<issue_number_or_url> will close the issue whjen this is merged
+- Fixes #<issue_number_or_url> will close the issue when this is merged
 - Addresses #<issue_number_or_url> will link the issue to this PR
 - Are there any specific things you want a reviewer to notice/check/give feedback?
 -->
