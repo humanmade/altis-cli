@@ -28,7 +28,7 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `setup` - Set up configuration
 	* `status` - Show stored configuration
 * `app` - Application commands
-	* Alias for `stack`; preferred for Vantage application commands.
+	* Alias for `stack`; preferred for Altis Dashboard application commands.
 	* `list` - List stacks available in our hosting.
 	* `backup [stack]` - Create a new backup for the stack.
 	* `backups [stack]` - List backups for the stack.
