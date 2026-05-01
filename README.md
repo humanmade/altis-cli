@@ -38,7 +38,7 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `build [stack]` - Start a build. Example: `altis-cli app build production`
 	* `build-cache clear [stack]` - Clear the build cache. Example: `altis-cli app build-cache clear production --yes`
 	* `deploys [stack]` - List deploys. Example: `altis-cli app deploys production`
-	* `deploy unlock [stack]` - Release deploy/build locks. Example: `altis-cli app deploy unlock production`
+	* `deploy unlock [stack]` - Release deploy/build locks (requires HM staff access). Example: `altis-cli app deploy unlock production`
 	* `tasks` - List, cancel, or stream running tasks. Example: `altis-cli app tasks production`
 	* `tasks cancel <id>` - Cancel a running task. Example: `altis-cli app tasks cancel <id> --yes`
 	* `tasks logs <id>` - Stream logs for a running task. Example: `altis-cli app tasks logs <id>`
