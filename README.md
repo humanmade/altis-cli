@@ -51,6 +51,18 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `ua-blocklist` - Manage user-agent blocklist. Example: `altis-cli app ua-blocklist get example-dev-01`
 	* `packages [stack]` - List packages. Example: `altis-cli app packages example-dev-01`
 	* `vulnerabilities [stack]` - List packages with vulnerabilities. Example: `altis-cli app vulnerabilities example-dev-01`
+	* `xray [stack]` - X-Ray live stats dashboard and trace browser. Examples:
+		* `altis-cli app xray example-dev-01` - Live auto-refreshing stats dashboard with sparklines and trace menu.
+		* `altis-cli app xray example-dev-01 --after "2 hours ago"` - Dashboard for a custom time window.
+		* `altis-cli app xray list-traces example-dev-01` - List recent traces as a table.
+		* `altis-cli app xray list-traces example-dev-01 --errors` - Filter to errors and faults.
+		* `altis-cli app xray list-traces example-dev-01 --slow 2` - Traces slower than 2s.
+		* `altis-cli app xray list-traces example-dev-01 --url-contains wp-json` - Filter by URL substring.
+		* `altis-cli app xray list-traces example-dev-01 --group-by url` - Group by URL.
+		* `altis-cli app xray list-traces example-dev-01 --json` - Output as JSON.
+		* `altis-cli app xray trace <id> example-dev-01` - Show a single trace by ID.
+		* `altis-cli app xray trace <id> example-dev-01 --json --output trace.json` - Export trace to JSON file.
+		* `altis-cli app xray trace-file trace.json` - Inspect a local trace JSON export.
 * `stack` - Legacy alias for application commands
 	* `info [stack]` - Get information for a stack.
 	* `scp <src> <dest>` - Copy a file to/from a stack.
