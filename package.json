@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.1.0",
   "dependencies": {
+    "@automattic/vip-search-replace": "^2.0.0",
     "@humanmade/ssm": "^0.0.1",
     "ansi-escapes": "^2.0.0",
     "application-config": "^1.0.1",
