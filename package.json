@@ -35,6 +35,9 @@
   "bin": {
     "altis-cli": "./bin/altis-cli.js"
   },
+  "scripts": {
+    "test": "node --test"
+  },
   "files": [
     "bin",
     "lib"
