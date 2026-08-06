@@ -2,6 +2,28 @@
   "name": "altis-cli",
   "type": "module",
   "version": "1.1.0",
+  "description": "Command-line tool for managing Altis Cloud hosting: stacks, backups, deploys, logs, X-Ray and more.",
+  "license": "MIT",
+  "homepage": "https://github.com/humanmade/altis-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/humanmade/altis-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/humanmade/altis-cli/issues"
+  },
+  "keywords": [
+    "altis",
+    "cli",
+    "hosting",
+    "wordpress"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "smoke": "node bin/altis-cli.js --help"
+  },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
     "@humanmade/ssm": "^0.0.1",
@@ -33,7 +55,7 @@
     "yargs": "^18.0.0"
   },
   "bin": {
-    "altis-cli": "./bin/altis-cli.js"
+    "altis-cli": "bin/altis-cli.js"
   },
   "files": [
     "bin",
