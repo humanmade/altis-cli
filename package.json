@@ -22,7 +22,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "smoke": "node bin/altis-cli.js --help"
+    "smoke": "node scripts/smoke.js"
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
