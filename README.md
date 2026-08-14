@@ -5,7 +5,7 @@ CLI for running Altis utilities and commands.
 
 ## Installing
 
-You need Node v18 or later.
+You need Node v20 or later.
 
 ```sh
 # Install globally:
@@ -78,26 +78,13 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `maintenance set <instance>` - Update maintenance contact. Example: `altis-cli instance maintenance set example-dev-01 --contact ops@example.com`
 	* `reports <instance>` - List reports. Example: `altis-cli instance reports example-dev-01`
 
+## Releasing
+
+See [RELEASING.md](RELEASING.md) for the release process and versioning
+guidelines.
+
 ## Credits
 
 Created by Ryan McCue to make your day better.
 
 Licensed under the MIT license. Copyright 2017-2023 Human Made.
-
-```
-      :+oo/      .hmNh    oyy. /dMMm:   /syo.
-   +dMMMMMMN.    oMMMy   :MMM+mMMMMMN oNMMMMm
-  mMNo-.dMMM+    dMMM+   oMMMMM+ dMMMmMdhMMMN
-  ++    sMMMo    NMMM.   yMMMM:  hMMMM+ .MMMd
-        yMMM+   .MMMM:/+oNMMMs   NMMMo  :MMMs
-        hMMMo/oydMMMMMMMMMMMM.   MMMN   oMMM+
-       /NMMMMMMNmMMMh-. .MMMd   :MMMh   yMMM-
-    +dMMMMMM/-  oMMMo   :MMMs   +MMMo   dMMM
-  oNMMy+MMMN    sMMMo   +MMM+   sMMM:   mMMM
-.mMMh. /MMMh    sMMMo   sMMM:   +ddy    hMMM-
-hMMy   sMMM+    +MMMh   hMMM.           :MMMNs+os
-MMM-   NMMN     .MMMM:  -/:.             :hNMMMMh
-dMMh:/mMMN:      +MMMMy:..-/s.               ..
- yMMMMMMy.        -hMMMMMMMNh-
-   -/:-              -///:.
-```
