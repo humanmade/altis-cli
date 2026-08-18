@@ -47,17 +47,14 @@ Publishing the release triggers `.github/workflows/release.yml`, which:
 - runs `npm audit` (advisory — does not block the release),
 - publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
 
-## One-time setup: the `NPM_TOKEN` secret
+## One-time setup: trusted publishing
 
-Publishing needs an npm access token stored as a repository secret named
-`NPM_TOKEN`:
+Publishing authenticates to npm as a
+[trusted publisher](https://docs.npmjs.com/trusted-publishers) via OIDC — no
+token or repository secret is required.
 
-1. On [npmjs.com](https://www.npmjs.com/) → **Access Tokens** → **Generate New
-   Token** → **Granular Access Token** (recommended) with **Read and write**
-   permission scoped to the `altis-cli` package. Use an **Automation** token so
-   it bypasses 2FA in CI.
-2. In GitHub: **Settings → Secrets and variables → Actions → New repository
-   secret**, name it `NPM_TOKEN`, and paste the token.
+The workflow grants `id-token: write` (for the OIDC exchange) and upgrades npm
+to a version new enough to support trusted publishing.
 
 Provenance additionally requires the repository to be public and the
 `repository` field in `package.json` to be set (both already true).
