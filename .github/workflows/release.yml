@@ -1,7 +1,8 @@
 name: Release
 
 # Publishes to npm when a GitHub Release is published.
-# See RELEASING.md for the full process and required NPM_TOKEN secret.
+# Authenticates to npm as a trusted publisher via OIDC (no token needed).
+# See RELEASING.md for the full process.
 on:
   release:
     types: [published]
@@ -18,8 +19,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 24
+
+      # Trusted publishing via OIDC requires npm >= 11.5.1; pin to latest to be safe.
+      - name: Upgrade npm
+        run: npm install -g npm@latest
 
       - run: npm ci
 
@@ -42,5 +46,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
