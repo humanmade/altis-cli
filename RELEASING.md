@@ -2,7 +2,9 @@
 
 Releases are published to [npm](https://www.npmjs.com/package/altis-cli)
 automatically by GitHub Actions whenever a **GitHub Release is published**.
-`package.json` is the single source of truth for the version number.
+The **release tag is the single source of truth** for the version number. It is
+stamped into `package.json` by the workflow at publish time, so the version
+committed to git is a placeholder (`0.0.0-development`) and never needs bumping.
 
 ## Versioning (SemVer)
 
@@ -17,35 +19,30 @@ We follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
 ## Cutting a release
 
-1. Make sure `main` is green in CI and you have the latest:
+1. Make sure `main` is green in CI and contains everything you want to ship.
 
-   ```sh
-   git checkout main && git pull
-   ```
+2. Go to **Releases → Draft a new release**.
 
-2. Bump the version. This updates `package.json` and creates a matching
-   `vX.Y.Z` commit and git tag:
+3. Under **Choose a tag**, type the new version (for example `1.2.0`) and pick
+   **Create new tag on publish**. Leave the target as `main`.
 
-   ```sh
-   npm version patch   # or: minor | major
-   ```
+4. Click **Generate release notes**, tidy them up if needed, and **Publish**.
 
-3. Push the commit and tag:
-
-   ```sh
-   git push --follow-tags
-   ```
-
-4. Create a **GitHub Release** for the new `vX.Y.Z` tag
-   (Releases → Draft a new release → choose the tag → add notes → Publish).
+That is the whole process. There is no version bump commit and no local
+tagging; GitHub creates the tag when the release is published.
 
 Publishing the release triggers `.github/workflows/release.yml`, which:
 
 - installs dependencies (`npm ci`),
-- **verifies the release tag matches `package.json`** (fails otherwise),
+- **validates the tag is a semver version and writes it into `package.json`**
+  (a leading `v` is accepted and stripped),
 - runs the CLI smoke test,
 - runs `npm audit` (advisory — does not block the release),
 - publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
+
+Because the version is only set inside the workflow, `altis-cli --version` from
+a git checkout reports `0.0.0-development`. Installs from npm report the real
+version.
 
 ## One-time setup: trusted publishing
 

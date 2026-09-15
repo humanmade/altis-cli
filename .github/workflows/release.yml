@@ -1,6 +1,8 @@
 name: Release
 
 # Publishes to npm when a GitHub Release is published.
+# The release tag is the single source of truth for the version: it is stamped
+# into package.json at publish time, so the version in git never needs bumping.
 # Authenticates to npm as a trusted publisher via OIDC (no token needed).
 # See RELEASING.md for the full process.
 on:
@@ -27,15 +29,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Verify tag matches package.json version
+      - name: Set version from release tag
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          pkg="$(node -p "require('./package.json').version")"
-          if [ "$tag" != "$pkg" ]; then
-            echo "::error::Release tag ($tag) does not match package.json version ($pkg)."
+          if ! [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Release tag '$GITHUB_REF_NAME' is not a semver version (expected X.Y.Z or vX.Y.Z)."
             exit 1
           fi
-          echo "Tag matches package.json version: $pkg"
+          npm version "$tag" --no-git-tag-version
+          echo "Publishing version $tag"
 
       - name: Smoke test
         run: npm run smoke
