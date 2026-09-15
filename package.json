@@ -1,7 +1,7 @@
 {
   "name": "altis-cli",
   "type": "module",
-  "version": "1.1.1",
+  "version": "0.0.0-development",
   "description": "Command-line tool for managing Altis Cloud hosting: stacks, backups, deploys, logs, X-Ray and more.",
   "license": "MIT",
   "homepage": "https://github.com/humanmade/altis-cli#readme",
