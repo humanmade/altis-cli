@@ -5,7 +5,7 @@ import inquirer from 'inquirer';
 import loudRejection from 'loud-rejection';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
@@ -14,8 +14,12 @@ import updateNotifier from 'update-notifier';
 import configure from '../lib/commands/index.js';
 import Cache from '../lib/cache.js';
 import Config from '../lib/config.js';
+import {
+	hasInformationalOption,
+	normalizeInformationalOptions,
+} from '../lib/cli-options.js';
 
-const main = async argv => {
+export const main = async (argv, { configureParser = configure } = {}) => {
 	// Install handlers.
 	loudRejection();
 
@@ -23,7 +27,14 @@ const main = async argv => {
 	updateNotifier({ pkg }).notify();
 
 	// Configure parser.
-	const parser = await configure();
+	const parser = await configureParser();
+	const args = argv.slice(2);
+
+	// Informational options must work before configuration is loaded or setup is required.
+	if (hasInformationalOption(args)) {
+		await parser.parse(normalizeInformationalOptions(args));
+		return;
+	}
 
 	// Run.
 	const config = new Config();
@@ -80,7 +91,9 @@ const main = async argv => {
 	}
 
 	// Parse arguments, and pass in config.
-	await parser.parse(argv.slice(2), { config });
+	await parser.parse(args, { config });
 }
 
-main(process.argv);
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+	main(process.argv);
+}
