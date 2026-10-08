@@ -31,9 +31,9 @@ jobs:
 
       - name: Set version from release tag
         run: |
-          tag="${GITHUB_REF_NAME#v}"
+          tag="$GITHUB_REF_NAME"
           if ! [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "::error::Release tag '$GITHUB_REF_NAME' is not a semver version (expected X.Y.Z or vX.Y.Z)."
+            echo "::error::Release tag '$GITHUB_REF_NAME' must be a semver version without a leading 'v' (expected X.Y.Z)."
             exit 1
           fi
           npm version "$tag" --no-git-tag-version

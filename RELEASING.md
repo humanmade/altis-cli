@@ -23,8 +23,9 @@ We follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
 2. Go to **Releases → Draft a new release**.
 
-3. Under **Choose a tag**, type the new version (for example `1.2.0`) and pick
-   **Create new tag on publish**. Leave the target as `main`.
+3. Under **Choose a tag**, type the new version without a leading `v` (for
+   example `1.2.0`) and pick **Create new tag on publish**. Leave the target as
+   `main`.
 
 4. Click **Generate release notes**, tidy them up if needed, and **Publish**.
 
@@ -35,7 +36,7 @@ Publishing the release triggers `.github/workflows/release.yml`, which:
 
 - installs dependencies (`npm ci`),
 - **validates the tag is a semver version and writes it into `package.json`**
-  (a leading `v` is accepted and stripped),
+  (a leading `v` is rejected),
 - runs the CLI smoke test,
 - runs `npm audit` (advisory — does not block the release),
 - publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
