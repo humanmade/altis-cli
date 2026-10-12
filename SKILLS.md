@@ -12,14 +12,14 @@ Use this file when working on `altis-cli` implementation tasks.
 ## Command Patterns
 
 - Commands are ESM modules under `lib/commands`.
-- `lib/buildSubcommands.js` auto-loads `.js` files and directories with `index.js`.
-- Application commands currently live under `lib/commands/stack`; `lib/commands/app/index.js` aliases that command tree.
+- `lib/buildSubcommands.ts` auto-loads `.js` files and directories with `index.js`.
+- Application commands currently live under `lib/commands/stack`; `lib/commands/app/index.ts` aliases that command tree.
 - Use yargs command modules with `command`, `description`, optional `builder`, and `handler`.
 - Keep existing `stack` command behavior stable.
 
 ## Common Helpers
 
-Use helpers from `lib/commands/stack/util.js`:
+Use helpers from `lib/commands/stack/util.ts`:
 
 - `getApp(argv)` / `getStack(argv)` for resolving the app id or prompting.
 - `fetchJSON(v, url, opts)` for authenticated JSON API calls and backend error messages.
@@ -62,3 +62,7 @@ Use helpers from `lib/commands/stack/util.js`:
 - Human output is default.
 - `--json` should return raw backend data.
 - Do not add an `--llm` mode or built-in diagnosis in the first X-Ray PR.
+
+Source files are TypeScript and import local modules with `.js` extensions for Node ESM.
+Run `npm run typecheck` and `npm test`. API type snapshots are synchronized from
+Vantage with `npm run sync-api-types -- /path/to/vantage/frontend`.

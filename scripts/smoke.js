@@ -6,7 +6,7 @@
 // bin/altis-cli.js, which gates on configuration/setup and exits non-zero when
 // unconfigured (e.g. in CI) — see https://github.com/humanmade/altis-cli/issues/47.
 
-import configure from '../lib/commands/index.js';
+import configure from '../dist/lib/commands/index.js';
 
 const parser = await configure();
 await parser.parse(['--help']);
