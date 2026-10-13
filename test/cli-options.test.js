@@ -7,11 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import test from 'node:test';
 
-import { isInformationalInvocation, toParserArgs } from '../lib/cli-options.js';
+import { isInformationalInvocation, toParserArgs } from '../dist/lib/cli-options.js';
 
 const run = promisify(execFile);
 
-const bin = fileURLToPath(new URL('../bin/altis-cli.js', import.meta.url));
+const bin = fileURLToPath(new URL('../dist/bin/altis-cli.js', import.meta.url));
 const pkg = JSON.parse(
 	fs.readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8')
 );

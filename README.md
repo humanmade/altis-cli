@@ -5,7 +5,7 @@ CLI for running Altis utilities and commands.
 
 ## Installing
 
-You need Node v20 or later.
+You need Node 20.19+, Node 22.12+, or Node 24+.
 
 ```sh
 # Install globally:
@@ -88,3 +88,57 @@ guidelines.
 Created by Ryan McCue to make your day better.
 
 Licensed under the MIT license. Copyright 2017-2023 Human Made.
+
+## Developing
+
+The CLI source in `bin/` and `lib/` is TypeScript. For local development, use
+**Node 22.18+ or Node 24+** to run the source with Node's native type stripping:
+
+```sh
+npm ci
+npm run dev -- app --help
+npm run dev -- app list
+# Equivalent direct invocation:
+node bin/altis-cli.ts app --help
+# Run the source-only native execution tests:
+npm run test:native
+```
+
+`dev` runs your current source immediately, with no build step or loader flags.
+Type stripping does not check types; run `npm run typecheck` to check your edits.
+Native execution is tested in CI on Node 22 and 24 with a source-only fixture
+that has no `dist/` directory. The tests cover command discovery, nested commands,
+package metadata, error types, and the executable through a symlink.
+
+The published npm package contains compiled JavaScript and continues to support
+Node 20.19+. To build and test that distribution locally:
+
+```sh
+npm run build
+node dist/bin/altis-cli.js app --help
+npm run typecheck
+npm test
+```
+
+`npm run build` compiles strict TypeScript to Node ESM in `dist/`, rewrites relative
+`.ts` imports to `.js`, copies the OAuth success page stylesheet, and makes the
+executable runnable. `npm ci` and `npm pack` build automatically via `prepare`.
+You can edit and rerun `dev` after installation without rebuilding.
+
+### Vantage API types
+
+`lib/types/rest-api.ts` and `lib/types/xray-segments.ts` are snapshots of the
+Vantage frontend's generated REST types and X-Ray segment types. They were copied from the local frontend working copy, based on
+commit `f9a3811f6429a0eccfde81bea89261659ad4ea79`, including its current REST type
+changes. Keep them identical to the frontend sources rather than manually editing them:
+
+```sh
+# Regenerate REST types in the frontend first when its backend schema changes.
+npm run sync-api-types -- /path/to/vantage/frontend
+npm run typecheck
+npm test
+```
+
+CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
+live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
+`fetchJSON<T>()` describes expected API responses without validating them at runtime.

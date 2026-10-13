@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { PassThrough } from 'node:stream';
 import test from 'node:test';
 
-import { attachSessionInput, startKeepalive } from '../lib/commands/stack/ssh.js';
+import { attachSessionInput, startKeepalive } from '../dist/lib/commands/stack/ssh.js';
 
 test('SSH input resumes a paused terminal and forwards data', async () => {
 	const input = new PassThrough();
