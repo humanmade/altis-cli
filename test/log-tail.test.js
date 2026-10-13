@@ -22,6 +22,7 @@ async function interrupt(t, command, url, marker, signal) {
  assert.equal(receivedSignal, null, errors);
  assert.equal(code, signal === 'SIGINT' ? 130 : 143, errors);
  if (marker !== 'WAITING') assert.match(output, /CLOSED/, 'The stream must be destroyed before exiting');
+ return output;
 }
 
 for (const command of ['logs', 'php-logs']) {
@@ -41,4 +42,21 @@ test('tail stops on SIGTERM while waiting to reconnect', { timeout: 10000 }, asy
  await once(server, 'listening');
  t.after(() => { server.closeAllConnections(); server.close(); });
  await interrupt(t, 'logs', `http://127.0.0.1:${server.address().port}`, 'RETRY', 'SIGTERM');
+});
+
+
+test('tailed string messages print without JSON quoting or escaped newlines', { timeout: 10000 }, async t => {
+ const message = 'PHP Warning: Attempt to read property "lru_cache_misses" on null\n';
+ const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/event-stream' });
+  res.write(`event: log\ndata: ${JSON.stringify(message)}\n\nevent: log\ndata: ${JSON.stringify({ message: 'Object message' })}\n\n`);
+ });
+ server.listen(0, '127.0.0.1');
+ await once(server, 'listening');
+ t.after(() => { server.closeAllConnections(); server.close(); });
+ const output = await interrupt(t, 'logs', `http://127.0.0.1:${server.address().port}`, 'Object message', 'SIGINT');
+ assert.ok(output.includes(message), output);
+ assert.ok(!output.includes(JSON.stringify(message)), output);
+ assert.ok(!output.includes(`${message}\n`), 'A message already ending in a newline should not add another');
+ assert.match(output, /^Object message$/m);
 });
