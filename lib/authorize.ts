@@ -115,9 +115,6 @@ class Authenticator {
 export default function(opts: AuthorizationOptions) {
 	const options = Object.assign<Partial<AuthorizationOptions>, AuthorizationOptions>(
 		{
-
-
-
 			port: 4101,
 			render: ( title: string, message?: string ) => `<!doctype html><html><body><h1>${ title }</h1><p>${ message }</p></body></html>`,
 		},

@@ -10,5 +10,4 @@ class Cache extends Config {
 	}
 }
 
-
 export default Cache;
