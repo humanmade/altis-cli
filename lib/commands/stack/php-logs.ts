@@ -1,3 +1,4 @@
+import { tailStream } from '../../log-tail.ts';
 import type { LogResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
@@ -15,7 +16,7 @@ const handler = function (argv: CliArguments) {
 			status.fail('--before and --after are not supported with the --tail option.');
 			return;
 		}
-		v.getLogStream({ id: stack!, log: `${stack}/php` }).then(stream => {
+		return tailStream(() => v.getLogStream({ id: stack!, log: `${stack}/php` }), stream => {
 			stream.on('open', () => status.succeed(chalk.bold.yellow('Connected!')));
 			stream.on('close', () => {
 				status.fail(`Disconnected from ${stack}`);
@@ -28,7 +29,7 @@ const handler = function (argv: CliArguments) {
 						break;
 				}
 			});
-		});
+		}, () => status.stop());
 	} else {
 		const args: Record<string, string> = {};
 		if (argv.before) {
