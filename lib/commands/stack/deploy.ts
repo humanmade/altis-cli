@@ -1,3 +1,4 @@
+import settings from './deploy/settings.ts';
 import { errorCode } from '../../types/errors.ts';
 import type { Build } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
@@ -124,6 +125,7 @@ export default {
 	command: 'deploy [action] [stack]',
 	describe: 'Deploy a given stack.',
 	builder: (subcommand: CommandBuilder) => {
+		subcommand.command(settings);
 		subcommand.option('debug', {
 			describe: 'Enable internal debugging information.',
 			type: 'boolean',
