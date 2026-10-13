@@ -148,13 +148,13 @@ live in `lib/types/xray.ts`. Neither builds nor installs require a frontend chec
 Read or update the configured branch and automatic deployment of new builds:
 
 ```bash
-altis-cli app deploy settings list example-prod
-altis-cli app deploy settings list example-prod --json
-altis-cli app deploy settings get branch example-prod
-altis-cli app deploy settings update branch staging example-prod
-altis-cli app deploy settings get autodeploy example-prod
-altis-cli app deploy settings update autodeploy true example-prod
-altis-cli app deploy settings update autodeploy false example-prod
+altis-cli app deploys settings list example-prod
+altis-cli app deploys settings list example-prod --json
+altis-cli app deploys settings get branch example-prod
+altis-cli app deploys settings update branch staging example-prod
+altis-cli app deploys settings get autodeploy example-prod
+altis-cli app deploys settings update autodeploy true example-prod
+altis-cli app deploys settings update autodeploy false example-prod
 ```
 
 `list --json` outputs `branch` and `autodeploy`; `get` prints the requested value.
