@@ -35,6 +35,7 @@ export default function(url: string, opts: StreamOptions = {}) {
 	});
 
 	function connect() {
+		if (destroyed) return;
 		const reqOpts: OptionsInit & { isStream: true; headers: Record<string, string | string[] | undefined> } = {
 			...opts.request,
 			isStream: true as const,

@@ -1,3 +1,4 @@
+import { tailStream } from '../../log-tail.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
@@ -43,7 +44,7 @@ function printLogs(logs: unknown) {
 
 function tailLog(v: Vantage, app: string, type: string, debug = false) {
 	const log = type === 'nodejs' ? `${app}/nodejs` : `${app}/${type}`;
-	return v.getLogStream({ id: app, log }).then(stream => {
+	return tailStream(() => v.getLogStream({ id: app, log }), stream => {
 		stream.on('open', () => console.error(chalk.bold.yellow('Connected!')));
 		stream.on('close', () => console.error(chalk.yellow(`Disconnected from ${app}`)));
 		stream.on('data', ({ type: eventType, data }) => {
