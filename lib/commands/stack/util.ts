@@ -160,11 +160,12 @@ export function printTable(rows: Record<string, unknown>[], options: TableOption
 
 let lastStatusLine: string | null = null;
 
-function renderStatus( status: LogStatus ) {
+function renderStatus( status: LogStatus, finished = false ) {
 	// Erase previous status bar.
 	if ( lastStatusLine ) {
-		process.stderr.clearLine(0);
+		process.stderr.clearLine?.(0);
 		process.stderr.write( '\r' );
+		lastStatusLine = null;
 	}
 
 	// Write log.
@@ -173,11 +174,45 @@ function renderStatus( status: LogStatus ) {
 		status.log = [];
 	}
 
+	if ( finished ) {
+		return;
+	}
+
 	// Write new status bar.
 	const progressChars = Math.floor( status.progress / 100 * PROGRESS_WIDTH );
 	const progress = '░'.repeat( progressChars ) + '⠂'.repeat( Math.max( 0, PROGRESS_WIDTH - progressChars ) );
 	lastStatusLine = `${ status.spinner.frame() } [${ progress }] ${ chalk.yellow( status.step ) }`;
 	process.stderr.write( lastStatusLine );
+}
+
+interface LogEvent {
+	type: string;
+	data: string;
+}
+
+/** CodeBuild streams wrap Vantage's terminal events as raw CloudWatch output. */
+function unwrapCodeBuildTerminalEvent( event: LogEvent ): LogEvent {
+	if ( event.type !== 'log' ) {
+		return event;
+	}
+	try {
+		const entry = JSON.parse( event.data );
+		if ( !entry || entry.level !== 'debug' || typeof entry.message !== 'string' ) {
+			return event;
+		}
+		const marker = JSON.parse( entry.message );
+		if ( !marker || !Number.isInteger( marker.message_id ) || marker.message_id < 1 ) {
+			return event;
+		}
+		const complete = marker.type === 'complete' && Array.isArray( marker.data ) && marker.data.length === 0;
+		const fail = marker.type === 'fail' && marker.data?.level === 'error' && typeof marker.data.message === 'string';
+		if ( complete || fail ) {
+			return { type: marker.type, data: JSON.stringify( marker.data ) };
+		}
+	} catch {
+		// Ordinary build output may contain arbitrary text or JSON.
+	}
+	return event;
 }
 
 export function streamLog(vantage: Vantage, stack: string, log: string, debug: boolean = false): Promise<void> {
@@ -193,18 +228,25 @@ export function streamLog(vantage: Vantage, stack: string, log: string, debug: b
 			// Render status at 30fps.
 			let renderLoop = setInterval( () => renderStatus( status ), 1000 / 30 );
 
-			stream.on( 'open', () => status.log.push( chalk.bold.yellow( 'Connected!' ) ) );
+			stream.on( 'open', () => {
+				status.step = 'Streaming logs…';
+				status.log.push( chalk.bold.yellow( 'Connected!' ) );
+			});
+			stream.on( 'reconnect', () => status.step = 'Streaming logs…' );
+			stream.on( 'retry', () => {
+				status.step = 'Reconnecting…';
+				if ( debug ) {
+					status.log.push( chalk.yellow( 'Reconnecting to stream...' ) );
+				}
+			});
 			stream.on( 'close', () => {
 				// Final render.
 				clearInterval( renderLoop );
-				renderStatus( status );
+				renderStatus( status, true );
 			});
 
-			if ( debug ) {
-				stream.on( 'retry', () => status.log.push( chalk.yellow( 'Reconnecting to stream...' ) ) );
-			}
-
-			stream.on( 'data', ({ type, data }) => {
+			stream.on( 'data', event => {
+				const { type, data } = log.startsWith( '/aws/codebuild/' ) ? unwrapCodeBuildTerminalEvent( event ) : event;
 				if ( debug ) {
 					console.log( `${chalk.red(type)} ${data}` );
 				}
@@ -225,6 +267,9 @@ export function streamLog(vantage: Vantage, stack: string, log: string, debug: b
 						break;
 
 					case 'log':
+						if ( status.step === 'Connecting…' || status.step === 'Reconnecting…' ) {
+							status.step = 'Streaming logs…';
+						}
 						const parsed = JSON.parse( data ) as { message: string; level: string };
 						const delimPos = parsed.message.indexOf( '::' );
 						const isErrorOutput = delimPos > 0 && parsed.message.substring( 0, delimPos ) === 'err';

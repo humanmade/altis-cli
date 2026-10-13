@@ -10,8 +10,7 @@ const handler = async (argv: CliArguments) => {
 	const v = new Vantage(argv.config);
 
 	if (argv.resume) {
-		streamLog(v, app, argv.resume, argv.debug);
-		return;
+		return streamLog(v, app, argv.resume, argv.debug);
 	}
 
 	let data;
@@ -26,7 +25,7 @@ const handler = async (argv: CliArguments) => {
 	const log = typeof data === 'string' ? data : data.log || data.task_id || '';
 	console.log(chalk.yellow(`Build started, resume later with:`));
 	console.log(chalk.yellow(`  altis-cli app build ${app} --resume ${log}\n`));
-	streamLog(v, app, log, argv.debug);
+	return streamLog(v, app, log, argv.debug);
 };
 
 export default {
