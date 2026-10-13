@@ -4,7 +4,6 @@ import http from 'http';
 import fetch from 'node-fetch';
 import open from 'open';
 import qs from 'querystring';
-import url from 'url';
 
 interface AuthorizationOptions {
 	endpoints: { authorize: string; exchange: string };
@@ -61,16 +60,18 @@ class Authenticator {
 	}
 
 	handleRequest( req: http.IncomingMessage, res: http.ServerResponse ) {
-		const bits = url.parse( req.url || '/', true );
+		const params = new URL( req.url || '/', `http://localhost:${ this.options.port }` ).searchParams;
+		const states = params.getAll( 'state' );
+		const code = params.getAll( 'code' ).join( ',' );
 		res.setHeader( 'Content-Type', 'text/html' );
 
 		// Check that state is present and matches our expected.
-		if ( ! bits.query.state || bits.query.state !== this.state ) {
+		if ( states.length !== 1 || states[0] !== this.state ) {
 			res.writeHead( 400 );
 			res.end( this.options.render( 'Invalid state parameter.' ) );
 			return Promise.resolve( null );
 		}
-		if ( ! bits.query.code ) {
+		if ( ! code ) {
 			res.writeHead( 400 );
 			res.end( this.options.render( 'Missing code parameter.' ) );
 			return Promise.resolve( null );
@@ -79,7 +80,7 @@ class Authenticator {
 		res.writeHead( 200 );
 		res.end( this.options.render( 'Authenticated altis-cli!', 'You can now close this window and go back to your terminal.' ) );
 
-		return this.exchangeCode( String(bits.query.code) );
+		return this.exchangeCode( code );
 	}
 
 	start() {

@@ -2,7 +2,7 @@ import type { LogResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import ora from 'ora';
-import { format, parse } from 'url';
+import { stringify } from 'querystring';
 import Vantage from '../../vantage.ts';
 
 const handler = function (argv: CliArguments) {
@@ -30,7 +30,6 @@ const handler = function (argv: CliArguments) {
 			});
 		});
 	} else {
-		const urlObj = parse(`stack/applications/${stack}/logs/php`, true);
 		const args: Record<string, string> = {};
 		if (argv.before) {
 			args.before = argv.before;
@@ -38,8 +37,8 @@ const handler = function (argv: CliArguments) {
 		if (argv.after) {
 			args.after = argv.after;
 		}
-		urlObj.query = args;
-		const url = format(urlObj);
+		const query = stringify(args);
+		const url = `stack/applications/${stack}/logs/php${query ? `?${query}` : ''}`;
 		v.fetch(url).then(resp => {
 			// hm-stack currently returns a 500 for invalid stacks, so we have to
 			// assume any failure is a 404: https://github.com/humanmade/hm-stack/issues/367

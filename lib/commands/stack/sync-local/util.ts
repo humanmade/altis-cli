@@ -12,7 +12,7 @@ import ora from 'ora';
 import path from 'path';
 import progressStream from 'progress-stream';
 import { pipeline } from 'stream/promises';
-import { format, parse } from 'url';
+import { stringify } from 'querystring';
 import { createGunzip } from 'zlib';
 import { createRequire } from 'module';
 import { streamLog } from '../util.ts';
@@ -72,9 +72,7 @@ export async function confirm( message: string ) {
 // --- Remote backup creation ---
 
 export async function startBackup( v: Vantage, stack: string, opts: Record<string, string | number | boolean | string[]> ) {
-	const urlBits = parse( `stack/applications/${ stack }/backups`, true );
-	urlBits.query = { ...opts, stream: 'true' };
-	const url = format( urlBits );
+	const url = `stack/applications/${ stack }/backups?${ stringify( { ...opts, stream: 'true' } ) }`;
 
 	const resp = await v.fetch( url, { method: 'POST' } );
 	const text = await resp.text();

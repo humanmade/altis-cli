@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 import fs from 'fs';
 import http from 'http';
 import path from 'path';
-import { format, parse, resolve, fileURLToPath } from 'url';
+import { fileURLToPath } from 'url';
 
 import authorize from './authorize.ts';
 import { CFG_NAME } from './config.ts';
@@ -118,7 +118,7 @@ class VantageAPI {
 	}
 
 	fetch( url: string, opts: RequestInit = {} ): Promise<Response> {
-		const absUrl = resolve( BASE_URL, url );
+		const absUrl = new URL( url, BASE_URL ).href;
 		return this.authenticate().then( ( { token } ) => {
 			const options = Object.assign( {}, opts, {
 				headers: Object.assign(
@@ -134,9 +134,9 @@ class VantageAPI {
 	}
 
 	getLogStream( args: Record<string, string> ) {
-		const urlObj = parse( resolve( BASE_URL, '/stream-log' ), true );
-		urlObj.query = args;
-		const absUrl = format( urlObj );
+		const urlObj = new URL( '/stream-log', BASE_URL );
+		urlObj.search = new URLSearchParams( args ).toString();
+		const absUrl = urlObj.href;
 		return this.authenticate().then( ( { token } ) => {
 			const opts = {
 				request: {

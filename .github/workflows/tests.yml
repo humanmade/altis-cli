@@ -46,4 +46,6 @@ jobs:
 
       - name: Test native TypeScript development
         if: matrix.node-version != '20.x'
-        run: npm run test:native
+        run: |
+          npm run test:native
+          ALTIS_TEST_SOURCE=1 node --throw-deprecation --test test/urls.test.js

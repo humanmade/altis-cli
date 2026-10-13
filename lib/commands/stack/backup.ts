@@ -2,18 +2,14 @@ import type { CliArguments, CommandBuilder, CommandDefinition } from '../../type
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { format, parse } from 'url';
+import { stringify } from 'querystring';
 import { getStack, streamLog } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 function startBackup( vantage: Vantage, stack: string, args: Record<string, string | number> ) {
 	console.log( `Starting backup for ${stack}...` );
 
-	const urlBits = parse( `stack/applications/${stack}/backups`, true );
-
-	urlBits.query = Object.fromEntries(Object.entries({ ...args, stream: 'true' }).map(([key, value]) => [key, String(value)]));
-
-	const url = format( urlBits );
+	const url = `stack/applications/${stack}/backups?${ stringify( { ...args, stream: 'true' } ) }`;
 
 	const opts = { method: 'POST' };
 	return vantage.fetch( url, opts ).then( resp => {
