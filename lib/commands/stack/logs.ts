@@ -55,7 +55,11 @@ function tailLog(v: Vantage, app: string, type: string, debug = false) {
 				return;
 			}
 			const parsed = JSON.parse(data);
-			console.log(parsed.message || JSON.stringify(parsed));
+			if (typeof parsed === 'string') {
+				process.stdout.write(parsed.endsWith('\n') ? parsed : `${parsed}\n`);
+			} else {
+				console.log(parsed.message || JSON.stringify(parsed));
+			}
 		});
 	});
 }
