@@ -91,14 +91,30 @@ Licensed under the MIT license. Copyright 2017-2023 Human Made.
 
 ## Developing
 
-The CLI source in `bin/` and `lib/` is TypeScript. Compile it before running:
+The CLI source in `bin/` and `lib/` is TypeScript. Install dependencies, then use
+`dev` to build and run the CLI with your latest edits:
 
 ```sh
 npm ci
+npm run dev -- app --help
+# Forward any CLI arguments after --, for example:
+npm run dev -- app list
+```
+
+`npm run dev` rebuilds on each invocation. For repeated commands without source
+changes, build once and run the output directly:
+
+```sh
+npm run build
+node dist/bin/altis-cli.js app --help
 npm run typecheck
 npm test
-node dist/bin/altis-cli.js app --help
 ```
+
+Development and installed packages both execute JavaScript compiled by `tsc`;
+Node's native TypeScript stripping is not required or used. The compiled workflow
+is tested on Node 20, 22, and 24 in CI, including command imports, help/version
+before setup, and the executable through a symlink.
 
 `npm run build` compiles strict TypeScript to Node ESM in `dist/`, copies the OAuth
 success page stylesheet, and makes the executable runnable. The npm package ships

@@ -28,7 +28,8 @@
     "typecheck": "tsc --noEmit",
     "pretest": "npm run build",
     "prepare": "npm run build",
-    "sync-api-types": "node scripts/sync-api-types.js"
+    "sync-api-types": "node scripts/sync-api-types.js",
+    "dev": "npm run build && node dist/bin/altis-cli.js"
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
