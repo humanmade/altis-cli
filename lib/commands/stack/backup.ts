@@ -1,10 +1,10 @@
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import { format, parse } from 'url';
-import { getStack, streamLog } from './util.js';
-import Vantage from '../../vantage.js';
+import { getStack, streamLog } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 function startBackup( vantage: Vantage, stack: string, args: Record<string, string | number> ) {
 	console.log( `Starting backup for ${stack}...` );

@@ -1,8 +1,8 @@
-import type { Domain } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { Domain } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.js';
-import Vantage from '../../vantage.js';
+import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const action = argv.action || 'list';

@@ -1,5 +1,5 @@
-import type { CommandDefinition } from '../../types/cli.js';
-import stackCommand from '../stack/index.js';
+import type { CommandDefinition } from '../../types/cli.ts';
+import stackCommand from '../stack/index.ts';
 
 export default {
 	...stackCommand,

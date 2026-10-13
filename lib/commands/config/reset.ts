@@ -1,4 +1,4 @@
-import type { CliArguments, CommandDefinition } from '../../types/cli.js';
+import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
 import inquirer from 'inquirer';
 
 const handler = (argv: CliArguments) => {

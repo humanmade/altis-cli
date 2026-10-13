@@ -1,12 +1,12 @@
-import type { ApplicationInfo } from '../../types/api.js';
-import type { CliArguments, CommandDefinition } from '../../types/cli.js';
+import type { ApplicationInfo } from '../../types/api.ts';
+import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import columnify from 'columnify';
 import indentString from 'indent-string';
 import logUpdate from 'log-update';
 import ora from 'ora';
-import { getStack, renderCommit, renderRepo } from './util.js';
-import Vantage from '../../vantage.js';
+import { getStack, renderCommit, renderRepo } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const COLUMN_OPTS = {
 	showHeaders: false,

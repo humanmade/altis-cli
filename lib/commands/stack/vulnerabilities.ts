@@ -1,5 +1,5 @@
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
-import packagesCommand from './packages.js';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
+import packagesCommand from './packages.ts';
 
 export default {
 	...packagesCommand,

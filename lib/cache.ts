@@ -1,5 +1,5 @@
 import path from 'path';
-import Config from './config.js';
+import Config from './config.ts';
 
 class Cache extends Config {
 	static defaults = {};

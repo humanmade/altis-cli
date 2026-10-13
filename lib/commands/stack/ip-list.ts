@@ -1,9 +1,9 @@
-import { errorCode } from '../../types/errors.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import { errorCode } from '../../types/errors.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.js';
-import Vantage from '../../vantage.js';
+import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 function readValues(file: string | undefined, inline: string | (string | number)[] = []) {
 	const values = Array.isArray(inline) ? inline.slice() : inline ? [inline] : [];

@@ -1,9 +1,9 @@
-import { errorCode } from '../../types/errors.js';
-import type { InstanceAccessRow, InstanceReport, InstanceResponse } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import { errorCode } from '../../types/errors.ts';
+import type { InstanceAccessRow, InstanceReport, InstanceResponse } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { fetchJSON, confirm, printJSON, printTable } from '../stack/util.js';
-import Vantage from '../../vantage.js';
+import { fetchJSON, confirm, printJSON, printTable } from '../stack/util.ts';
+import Vantage from '../../vantage.ts';
 
 function requireArg(value: unknown, message: string): asserts value {
 	if (!value) {

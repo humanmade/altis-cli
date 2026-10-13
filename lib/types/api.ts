@@ -1,6 +1,6 @@
-import type { ApplicationResponse, BuildResponse, BackupResponse, CliSessionResponse, DatabaseServerResponse, WebServerResponse, LoadBalancerResponse } from './rest-api.js';
-export * from './rest-api.js';
-export type Deploy = import('./rest-api.js').DeployResponse & { status?: string; build?: string; user?: string | { name: string } };
+import type { ApplicationResponse, BuildResponse, BackupResponse, CliSessionResponse, DatabaseServerResponse, WebServerResponse, LoadBalancerResponse } from './rest-api.ts';
+export * from './rest-api.ts';
+export type Deploy = import('./rest-api.ts').DeployResponse & { status?: string; build?: string; user?: string | { name: string } };
 export type Build = BuildResponse & { source_version?: string; rev?: string };
 export type Backup = BackupResponse & { status?: string };
 export type CliSession = CliSessionResponse & { aws_ssm_session_id: string };

@@ -1,6 +1,6 @@
-import type { CliArguments, CommandDefinition } from '../../types/cli.js';
+import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import vantage from '../../vantage.js';
+import vantage from '../../vantage.ts';
 
 const handler = (argv: CliArguments) => {
 	const config = argv.config;

@@ -1,7 +1,7 @@
-import { errorMessage } from '../../../types/errors.js';
-import type { Backup } from '../../../types/api.js';
-import type { CommandBuilder } from '../../../types/cli.js';
-import type Vantage from '../../../vantage.js';
+import { errorMessage } from '../../../types/errors.ts';
+import type { Backup } from '../../../types/api.ts';
+import type { CommandBuilder } from '../../../types/cli.ts';
+import type Vantage from '../../../vantage.ts';
 import bytes from 'bytes';
 import chalk from 'chalk';
 import { execSync, spawn } from 'child_process';
@@ -15,7 +15,7 @@ import { pipeline } from 'stream/promises';
 import { format, parse } from 'url';
 import { createGunzip } from 'zlib';
 import { createRequire } from 'module';
-import { streamLog } from '../util.js';
+import { streamLog } from '../util.ts';
 
 const require = createRequire( import.meta.url );
 

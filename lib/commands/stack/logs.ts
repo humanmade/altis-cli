@@ -1,8 +1,8 @@
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getApp, buildQuery, parseKeyValueArgs, printJSON } from './util.js';
-import Vantage from '../../vantage.js';
+import { getApp, buildQuery, parseKeyValueArgs, printJSON } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const LOG_ROUTES: Record<string, string> = {
 	php: 'logs/php',

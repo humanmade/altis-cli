@@ -1,8 +1,8 @@
-import type { RunningTasksResponse } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { RunningTasksResponse } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { fetchJSON, confirm, printJSON, printTable, streamLog } from './util.js';
-import Vantage from '../../vantage.js';
+import { fetchJSON, confirm, printJSON, printTable, streamLog } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const v = new Vantage(argv.config);

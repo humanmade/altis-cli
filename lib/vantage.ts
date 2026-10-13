@@ -1,6 +1,6 @@
-import type Config from './config.js';
+import type Config from './config.ts';
 import type { RequestInit, Response } from 'node-fetch';
-import type { ApplicationResponse } from './types/rest-api.js';
+import type { ApplicationResponse } from './types/rest-api.ts';
 
 import chalk from 'chalk';
 import fetch from 'node-fetch';
@@ -9,9 +9,9 @@ import http from 'http';
 import path from 'path';
 import { format, parse, resolve, fileURLToPath } from 'url';
 
-import authorize from './authorize.js';
-import { CFG_NAME } from './config.js';
-import stream from './stream.js';
+import authorize from './authorize.ts';
+import { CFG_NAME } from './config.ts';
+import stream from './stream.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

@@ -10,7 +10,10 @@
     "skipLibCheck": true,
     "noEmitOnError": true,
     "sourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true
   },
   "include": [
     "bin/**/*.ts",

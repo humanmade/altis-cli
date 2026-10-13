@@ -1,4 +1,4 @@
-import type { CliArguments, CommandDefinition } from '../../types/cli.js';
+import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 

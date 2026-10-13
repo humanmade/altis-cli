@@ -1,4 +1,4 @@
-import type Cache from './cache.js';
+import type Cache from './cache.ts';
 import appCfg from 'application-config';
 
 export const CFG_NAME = 'altis-cli';

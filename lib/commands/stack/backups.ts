@@ -1,5 +1,5 @@
-import type { Backup } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { Backup } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 
 import bytes from 'bytes';
 import chalk from 'chalk';
@@ -14,8 +14,8 @@ import { homedir } from 'node:os';
 import progressStream from 'progress-stream';
 import unusedFilename from 'unused-filename';
 
-import Vantage from '../../vantage.js';
-import { getStack, streamLog } from './util.js';
+import Vantage from '../../vantage.ts';
+import { getStack, streamLog } from './util.ts';
 
 const getProgress = (progress: import('progress-stream').Progress) => {
 	const { percentage, speed } = progress;

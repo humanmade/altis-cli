@@ -1,11 +1,11 @@
-import { errorCode } from '../../types/errors.js';
-import type { Build } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import { errorCode } from '../../types/errors.ts';
+import type { Build } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { getStack, streamLog } from './util.js';
-import Vantage from '../../vantage.js';
+import { getStack, streamLog } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 function deploy( vantage: Vantage, stack: string, force = false, buildId: string ) {
 

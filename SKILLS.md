@@ -63,6 +63,8 @@ Use helpers from `lib/commands/stack/util.ts`:
 - `--json` should return raw backend data.
 - Do not add an `--llm` mode or built-in diagnosis in the first X-Ray PR.
 
-Source files are TypeScript and import local modules with `.js` extensions for Node ESM.
+Source files are TypeScript and import local modules with `.ts` extensions for native Node execution.
+Use `npm run dev -- ...` on Node 22.18+ or 24+ without rebuilding.
+The compiler rewrites relative extensions to `.js` for the published package.
 Run `npm run typecheck` and `npm test`. API type snapshots are synchronized from
 Vantage with `npm run sync-api-types -- /path/to/vantage/frontend`.

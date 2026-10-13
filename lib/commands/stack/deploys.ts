@@ -1,7 +1,7 @@
-import type { Deploy } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
-import { getApp, fetchJSON, printJSON, printTable } from './util.js';
-import Vantage from '../../vantage.js';
+import type { Deploy } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
+import { getApp, fetchJSON, printJSON, printTable } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const app = await getApp(argv);

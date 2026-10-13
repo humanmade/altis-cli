@@ -1,9 +1,9 @@
-import type { ImportSession, TaskResult } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { ImportSession, TaskResult } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { fetchJSON, parseList, parseReplacements, streamLog } from './util.js';
-import Vantage from '../../vantage.js';
+import { fetchJSON, parseList, parseReplacements, streamLog } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const { type, target } = argv;

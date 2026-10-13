@@ -1,6 +1,6 @@
 // Segment document types are synchronized from Vantage's frontend.
-import type { Subsegment } from './xray-segments.js';
-export * from './xray-segments.js';
+import type { Subsegment } from './xray-segments.ts';
+export * from './xray-segments.ts';
 
 export interface TraceSummary {
 	Id: string;

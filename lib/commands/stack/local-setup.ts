@@ -1,5 +1,5 @@
-import type { ApplicationResponse } from '../../types/api.js';
-import type { CliArguments, CommandDefinition } from '../../types/cli.js';
+import type { ApplicationResponse } from '../../types/api.ts';
+import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
 import bytes from 'bytes';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -7,8 +7,8 @@ import ora from 'ora';
 import process from 'process';
 import cmd from 'node-cmd';
 
-import Vantage from '../../vantage.js';
-import { getStack, streamLog } from './util.js';
+import Vantage from '../../vantage.ts';
+import { getStack, streamLog } from './util.ts';
 
 const handler = (argv: CliArguments) => {
 	getStack(argv).then((stack: string) => {

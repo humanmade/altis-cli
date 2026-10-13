@@ -1,9 +1,9 @@
-import type { LogResponse } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { LogResponse } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import ora from 'ora';
 import { format, parse } from 'url';
-import Vantage from '../../vantage.js';
+import Vantage from '../../vantage.ts';
 
 const handler = function (argv: CliArguments) {
 	const { config, stack, before, after } = argv;

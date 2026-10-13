@@ -1,5 +1,6 @@
-import type { CommandBuilder, CommandDefinition } from '../../types/cli.js';
-import buildSubcommands from '../../buildSubcommands.js';
+import { fileURLToPath } from 'node:url';
+import type { CommandBuilder, CommandDefinition } from '../../types/cli.ts';
+import buildSubcommands from '../../buildSubcommands.ts';
 
 export default {
 	command: 'stack',
@@ -7,7 +8,7 @@ export default {
 	builder: async function (command: CommandBuilder) {
 		// Main configuration.
 		command.demandCommand(1);
-		const subcommands = await buildSubcommands(new URL('.', import.meta.url).pathname);
+		const subcommands = await buildSubcommands(fileURLToPath(new URL('.', import.meta.url)));
 		command.command(subcommands);
 	},
 } satisfies CommandDefinition;

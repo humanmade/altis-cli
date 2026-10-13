@@ -1,9 +1,9 @@
-import { errorCode } from '../../types/errors.js';
-import type { TaskResult } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import { errorCode } from '../../types/errors.ts';
+import type { TaskResult } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { getApp, fetchJSON, streamLog } from './util.js';
-import Vantage from '../../vantage.js';
+import { getApp, fetchJSON, streamLog } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const app = await getApp(argv);

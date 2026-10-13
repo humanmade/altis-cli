@@ -1,10 +1,10 @@
-import type { CliSession } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { CliSession } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import ora from 'ora';
 import pkg from '@humanmade/ssm';
 const AWSSSMSession = pkg.default;
-import { getStack } from './util.js';
-import Vantage from '../../vantage.js';
+import { getStack } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 // Keep the socket alive by pinging every 30s.
 const IDLE_INTERVAL = 30_000;

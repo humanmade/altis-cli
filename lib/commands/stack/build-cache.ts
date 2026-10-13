@@ -1,7 +1,7 @@
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm } from './util.js';
-import Vantage from '../../vantage.js';
+import { getApp, fetchJSON, confirm } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	if (argv.action !== 'clear') {

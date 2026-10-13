@@ -1,11 +1,11 @@
-import type { ApplicationResponse } from '../../types/api.js';
-import type { CliArguments, CommandDefinition } from '../../types/cli.js';
+import type { ApplicationResponse } from '../../types/api.ts';
+import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
 
 import chalk from 'chalk';
 import columnify from 'columnify';
 import ora from 'ora';
-import { renderCommit, renderRepo } from './util.js';
-import Vantage from '../../vantage.js';
+import { renderCommit, renderRepo } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const handler = function ( argv: CliArguments ) {
 	const { config } = argv;

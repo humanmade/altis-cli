@@ -1,6 +1,6 @@
-import { errorMessage } from '../../types/errors.js';
-import type { CliSession } from '../../types/api.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import { errorMessage } from '../../types/errors.ts';
+import type { CliSession } from '../../types/api.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import { Base64Decode, Base64Encode } from 'base64-stream';
 import bytes from 'bytes';
 import fs from 'fs';
@@ -11,7 +11,7 @@ import split2 from 'split2';
 // import AWSSSMSession from '@humanmade/ssm';
 import pkg from '@humanmade/ssm';
 const AWSSSMSession = pkg.default;
-import Vantage from '../../vantage.js';
+import Vantage from '../../vantage.ts';
 
 const INITIAL_SIZE_WAIT = 700;
 // Experimentally, seems to be the best that SSM can handle.

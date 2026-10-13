@@ -6,13 +6,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import updateNotifier from 'update-notifier';
 
-import configure from './commands/index.js';
-import Cache from './cache.js';
-import Config from './config.js';
-import { isInformationalInvocation, toParserArgs } from './cli-options.js';
+import configure from './commands/index.ts';
+import Cache from './cache.ts';
+import Config from './config.ts';
+import { isInformationalInvocation, toParserArgs } from './cli-options.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf8'));
+const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, import.meta.url.endsWith('.ts') ? '../package.json' : '../../package.json'), 'utf8'));
 
 const main = async (argv: string[]) => {
 	// Install handlers.
@@ -74,7 +74,7 @@ const main = async (argv: string[]) => {
 			}
 		]);
 		if (runSetup) {
-			const setupModule = await import('./commands/config/setup.js');
+			const setupModule = await import('./commands/config/setup.ts');
 			await setupModule.default.handler({ config });
 			process.stderr.write(`Run ${chalk.yellow('altis-cli config setup')} at any time to run setup.\n\n`);
 			await config.set('didSetup', true);

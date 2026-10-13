@@ -1,4 +1,4 @@
-import type Config from '../config.js';
+import type Config from '../config.ts';
 import type { Options } from 'yargs';
 
 /** Arguments are supplied by yargs and configuration by the executable. */

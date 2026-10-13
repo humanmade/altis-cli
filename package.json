@@ -29,7 +29,8 @@
     "pretest": "npm run build",
     "prepare": "npm run build",
     "sync-api-types": "node scripts/sync-api-types.js",
-    "dev": "npm run build && node dist/bin/altis-cli.js"
+    "dev": "node bin/altis-cli.ts",
+    "test:native": "node --test test-native/*.test.js"
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",

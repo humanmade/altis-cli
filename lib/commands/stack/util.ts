@@ -1,14 +1,20 @@
 import type { Options as TableOptions } from 'columnify';
 import type { RequestInit } from 'node-fetch';
-import type { CliArguments, CommandBuilder } from '../../types/cli.js';
+import type { CliArguments, CommandBuilder } from '../../types/cli.ts';
 import chalk from 'chalk';
 import columnify from 'columnify';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import Vantage, { getStacks } from '../../vantage.js';
+import Vantage, { getStacks } from '../../vantage.ts';
 
 export class ApiError extends Error {
-	constructor(message: string, public status: number, public code?: string) { super(message); }
+	status: number;
+	code?: string;
+	constructor(message: string, status: number, code?: string) {
+		super(message);
+		this.status = status;
+		this.code = code;
+	}
 }
 interface LogStatus {
 	spinner: ReturnType<typeof ora>;

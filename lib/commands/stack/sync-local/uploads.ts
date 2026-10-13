@@ -1,12 +1,12 @@
-import { errorMessage } from '../../../types/errors.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.js';
+import { errorMessage } from '../../../types/errors.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.ts';
 import chalk from 'chalk';
 import fs from 'fs';
 import ora from 'ora';
 import path from 'path';
 import { tmpdir } from 'os';
 
-import Vantage from '../../../vantage.js';
+import Vantage from '../../../vantage.ts';
 import {
 	addCommonOptions,
 	addUploadsOptions,
@@ -24,7 +24,7 @@ import {
 	UserCancelled,
 	validateLocalProject,
 	waitForBackup,
-} from './util.js';
+} from './util.ts';
 
 const handler = async function ( argv: CliArguments ) {
 	const {

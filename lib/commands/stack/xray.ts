@@ -1,8 +1,9 @@
-import type { Trace, Subsegment, Exception, FlatSegment, TraceSummary, Statistic, ServiceGraph } from '../../types/xray.js';
-import { errorMessage, errorCode } from '../../types/errors.js';
-import type { ApplicationResponse } from '../../types/api.js';
-import type Config from '../../config.js';
-import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.js';
+import { fileURLToPath } from 'node:url';
+import type { Trace, Subsegment, Exception, FlatSegment, TraceSummary, Statistic, ServiceGraph } from '../../types/xray.ts';
+import { errorMessage, errorCode } from '../../types/errors.ts';
+import type { ApplicationResponse } from '../../types/api.ts';
+import type Config from '../../config.ts';
+import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import readline from 'readline';
 import { exec } from 'child_process';
@@ -10,8 +11,8 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import logUpdate from 'log-update';
 import ora from 'ora';
-import { getApp, fetchJSON, buildQuery, printJSON, printTable } from './util.js';
-import Vantage from '../../vantage.js';
+import { getApp, fetchJSON, buildQuery, printJSON, printTable } from './util.ts';
+import Vantage from '../../vantage.ts';
 
 const SPARK = '▁▂▃▄▅▆▇█';
 const QUIT = Symbol('quit');
