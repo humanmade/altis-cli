@@ -12,7 +12,7 @@ import ora from 'ora';
 import path from 'path';
 import progressStream from 'progress-stream';
 import { pipeline } from 'stream/promises';
-import { stringify } from 'querystring';
+import type { BackupQuery } from '../../../types/api-routes.ts';
 import { createGunzip } from 'zlib';
 import { createRequire } from 'module';
 import { streamLog } from '../util.ts';
@@ -71,10 +71,10 @@ export async function confirm( message: string ) {
 
 // --- Remote backup creation ---
 
-export async function startBackup( v: Vantage, stack: string, opts: Record<string, string | number | boolean | string[]> ) {
-	const url = `stack/applications/${ stack }/backups?${ stringify( { ...opts, stream: 'true' } ) }`;
+export async function startBackup( v: Vantage, stack: string, opts: Omit<BackupQuery, 'stream'> ) {
+	const url = `stack/applications/${ stack }/backups` as const;
 
-	const resp = await v.fetch( url, { method: 'POST' } );
+	const resp = await v.requestRaw( url, { method: 'POST', query: { ...opts, stream: true } } );
 	const text = await resp.text();
 	if ( ! resp.ok ) {
 		throw new Error( `Backup request failed: ${ text }` );
@@ -85,11 +85,11 @@ export async function startBackup( v: Vantage, stack: string, opts: Record<strin
 // --- Find completed backup ---
 
 export async function findCompletedBackup( v: Vantage, stack: string, startTime: Date ) {
-	const resp = await v.fetch( `stack/applications/${ stack }/backups` );
+	const resp = await v.requestRaw( `stack/applications/${ stack }/backups` );
 	if ( ! resp.ok ) {
 		throw new Error( `Failed to list backups: ${ resp.status }` );
 	}
-	const backups = await resp.json() as Backup[];
+	const backups = await resp.json();
 	const candidates = backups
 		.filter( b => new Date(b.date).getTime() >= startTime.getTime() )
 		.sort( ( a, b ) => new Date(b.date).getTime() - new Date(a.date).getTime() );
@@ -100,9 +100,9 @@ export async function findCompletedBackup( v: Vantage, stack: string, startTime:
 // --- Get latest existing backup ---
 
 export async function getLatestBackup( v: Vantage, stack: string ) {
-	const resp = await v.fetch( `stack/applications/${ stack }/backups` );
+	const resp = await v.requestRaw( `stack/applications/${ stack }/backups` );
 	if ( ! resp.ok ) return null;
-	const backups = await resp.json() as Backup[];
+	const backups = await resp.json();
 	if ( ! backups.length ) return null;
 	return backups.sort( ( a, b ) => new Date(b.date).getTime() - new Date(a.date).getTime() )[ 0 ];
 }
@@ -307,11 +307,11 @@ export async function runPostSync( localPath: string ) {
 // --- Resolve table names for multisite site IDs ---
 
 export async function resolveTablesForSiteIds( v: Vantage, app: string, siteIds: string[] ) {
-	const resp = await v.fetch( `stack/applications/${ app }/database-tables` );
+	const resp = await v.requestRaw( `stack/applications/${ app }/database-tables` );
 	if ( ! resp.ok ) {
 		throw new Error( `Failed to fetch table list: ${ resp.status }` );
 	}
-	const data = await resp.json() as string[] | { tables: string[] };
+	const data = await resp.json();
 	const tables = Array.isArray( data ) ? data : ( data.tables || [] );
 
 	// Derive the table prefix from the blogs table (e.g. "wp_blogs" → prefix "wp_")

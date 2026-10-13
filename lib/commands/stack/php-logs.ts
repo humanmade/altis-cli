@@ -3,7 +3,6 @@ import type { LogResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import ora from 'ora';
-import { stringify } from 'querystring';
 import Vantage from '../../vantage.ts';
 
 const handler = function (argv: CliArguments) {
@@ -38,16 +37,15 @@ const handler = function (argv: CliArguments) {
 		if (argv.after) {
 			args.after = argv.after;
 		}
-		const query = stringify(args);
-		const url = `stack/applications/${stack}/logs/php${query ? `?${query}` : ''}`;
-		v.fetch(url).then(resp => {
+		const url = `stack/applications/${stack}/logs/php` as const;
+		v.requestRaw(url, { query: args }).then(resp => {
 			// hm-stack currently returns a 500 for invalid stacks, so we have to
 			// assume any failure is a 404: https://github.com/humanmade/hm-stack/issues/367
 			if (!resp.ok) {
 				status.fail(`Invalid stack ${stack}`);
 				throw new Error(`Invalid stack ${stack}`);
 			}
-			return (resp.json() as Promise<LogResponse[]>);
+			return (resp.json());
 		}).then(logs => {
 			status.succeed(chalk.bold.green('Complete!'));
 			logs.map(log => console.log(log.message));

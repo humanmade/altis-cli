@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import logUpdate from 'log-update';
 import ora from 'ora';
-import { getApp, fetchJSON, buildQuery, printJSON, printTable } from './util.ts';
+import { getApp, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const SPARK = '▁▂▃▄▅▆▇█';
@@ -37,7 +37,7 @@ async function fetchNetworkSlug(v: Vantage, app: string, config: Config) {
 		if (cached && Date.now() < cached.ts + APP_INFO_TTL) return cached.slug;
 	}
 	try {
-		const data = await fetchJSON<ApplicationResponse>(v, `stack/applications/${app}`);
+		const data = await v.request(`stack/applications/${app}` as const);
 		const slug = data['altis-instance'] || null;
 		if (config && config.cache) {
 			config.cache.set(fileKey, { ts: Date.now(), slug });
@@ -52,7 +52,7 @@ async function fetchStatsWithCache(v: Vantage, app: string, after: string, befor
 	const key = `${app}:${after}:${before}`;
 	const cached = statsCache.get(key);
 	if (cached && Date.now() < cached.ts + STATS_TTL) return cached.data;
-	const data = await fetchJSON<Statistic[]>(v, `stack/applications/${app}/xray/statistics${buildQuery({ after, before })}`);
+	const data = await v.request(`stack/applications/${app}/xray/statistics` as const, { query: { after, before } });
 	statsCache.set(key, { ts: Date.now(), data });
 	return data;
 }
@@ -61,7 +61,7 @@ async function fetchGraphWithCache(v: Vantage, app: string, after: string, befor
 	const key = `${app}:${after}:${before}`;
 	const cached = graphCache.get(key);
 	if (cached && Date.now() < cached.ts + GRAPH_TTL) return cached.data;
-	const data = await fetchJSON<ServiceGraph>(v, `stack/applications/${app}/xray/service-graph${buildQuery({ after, before })}`);
+	const data = await v.request(`stack/applications/${app}/xray/service-graph` as const, { query: { after, before } });
 	graphCache.set(key, { ts: Date.now(), data });
 	return data;
 }
@@ -69,7 +69,7 @@ async function fetchGraphWithCache(v: Vantage, app: string, after: string, befor
 async function fetchTraceDetail(v: Vantage, app: string, traceId: string) {
 	const key = `${app}:${traceId}`;
 	if (traceDetailCache.has(key)) return traceDetailCache.get(key)!;
-	const data = await fetchJSON<Trace>(v, `stack/applications/${app}/xray/traces/${encodeURIComponent(traceId)}`);
+	const data = await v.request(`stack/applications/${app}/xray/traces/${encodeURIComponent(traceId)}` as const);
 	traceDetailCache.set(key, data);
 	return data;
 }
@@ -610,13 +610,13 @@ async function fetchSummaries(v: Vantage, app: string, argv: CliArguments) {
 		filter:         filter || undefined,
 		previous_token: argv.nextToken || undefined,
 	};
-	const url = `stack/applications/${app}/xray/traces/summaries${buildQuery(params)}`;
-	const resp = await v.fetch(url);
+	const url = `stack/applications/${app}/xray/traces/summaries` as const;
+	const resp = await v.requestRaw(url, { query: params });
 	if (!resp.ok) {
-		const data = await resp.json().catch(() => ({})) as { message?: string };
+		const data = await resp.json().catch(() => ({ message: undefined }));
 		throw new Error(data.message || resp.statusText);
 	}
-	const traces = await resp.json() as TraceSummary[];
+	const traces = await resp.json();
 	const nextToken = extractNextToken(resp.headers);
 	return { traces, nextToken };
 }

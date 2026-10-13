@@ -1,3 +1,4 @@
+import type { BackupQuery } from '../../../types/api-routes.ts';
 import { errorMessage } from '../../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.ts';
 import chalk from 'chalk';
@@ -108,7 +109,7 @@ const handler = async function ( argv: CliArguments ) {
 		// Create backup if needed
 		if ( ! backup && ! logId ) {
 			const backupSpinner = ora( `Creating remote uploads backup for ${ chalk.bold( app ) }…` ).start();
-			const opts = {
+			const opts: Omit<BackupQuery, 'stream'> = {
 				database: 0,
 				uploads: 1,
 				...( resolvedUploadsPath ? { uploads_path: resolvedUploadsPath } : {} ),

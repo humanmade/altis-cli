@@ -11,8 +11,7 @@ const handler = (argv: CliArguments) => {
 	const vantage_token = config.get('vantage_token');
 	if (vantage_token) {
 		const v = new vantage(config);
-		v.fetch('/api/wp/v2/users/me')
-			.then(resp => (resp.json() as Promise<{ slug: string }>))
+		v.request('/api/wp/v2/users/me')
 			.then(data => {
 				console.log(chalk.bold('Altis Cloud:'));
 				console.log(`  ${chalk.bold('User')}: ${data.slug}`);

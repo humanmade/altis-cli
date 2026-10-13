@@ -1,3 +1,5 @@
+import { ApiError } from './api-error.ts';
+import type { ApiOptions, ApiResponse, KnownPath, KnownGetPath, TypedResponse, TransportOptions } from './types/api-routes.ts';
 import type Config from './config.ts';
 import type { RequestInit, Response } from 'node-fetch';
 import type { ApplicationResponse } from './types/rest-api.ts';
@@ -117,7 +119,48 @@ class VantageAPI {
 		return this.authPromise;
 	}
 
-	fetch( url: string, opts: RequestInit = {} ): Promise<Response> {
+	request<const P extends string>(path: KnownGetPath<P>, options?: ApiOptions<P>): Promise<ApiResponse<P>>;
+	request<const P extends string, const M extends string>(path: KnownPath<P>, options: { method: M } & ApiOptions<NoInfer<P>, NoInfer<M>>): Promise<ApiResponse<P, M>>;
+	async request(path: string, options?: TransportOptions): Promise<unknown> {
+		const response = await this.sendRequest(path, options);
+		const text = await response.text();
+		let data: unknown = null;
+		if (text) {
+			try { data = JSON.parse(text); } catch { data = text; }
+		}
+		if (!response.ok) {
+			const error = data && typeof data === 'object' ? data as { message?: unknown; code?: unknown } : {};
+			throw new ApiError(typeof error.message === 'string' ? error.message : text || response.statusText, response.status, typeof error.code === 'string' ? error.code : undefined);
+		}
+		return data;
+	}
+
+	requestRaw<const P extends string>(path: KnownGetPath<P>, options?: ApiOptions<P>): Promise<TypedResponse<ApiResponse<P>>>;
+	requestRaw<const P extends string, const M extends string>(path: KnownPath<P>, options: { method: M } & ApiOptions<NoInfer<P>, NoInfer<M>>): Promise<TypedResponse<ApiResponse<P, M>>>;
+	requestRaw(path: string, options?: TransportOptions): Promise<Response> {
+		return this.sendRequest(path, options);
+	}
+
+	private async sendRequest(path: string, options: TransportOptions = {}): Promise<Response> {
+		const { query, body, ...transport } = options;
+		const url = new URL(path, BASE_URL);
+		if (query) {
+			for (const [key, value] of Object.entries(query)) {
+				if (value === undefined || value === null) continue;
+				if (Array.isArray(value)) value.forEach(item => url.searchParams.append(`${key}[]`, String(item)));
+				else if (typeof value === 'object') Object.entries(value).forEach(([child, item]) => url.searchParams.append(`${key}[${child}]`, String(item)));
+				else url.searchParams.set(key, String(value));
+			}
+		}
+		const opts: RequestInit = { ...transport };
+		if (body !== undefined) {
+			opts.body = JSON.stringify(body);
+			opts.headers = { ...opts.headers, 'Content-Type': 'application/json' };
+		}
+		return this.fetch(url.href, opts);
+	}
+
+	private fetch( url: string, opts: RequestInit = {} ): Promise<Response> {
 		const absUrl = new URL( url, BASE_URL ).href;
 		return this.authenticate().then( ( { token } ) => {
 			const options = Object.assign( {}, opts, {
@@ -133,7 +176,7 @@ class VantageAPI {
 		});
 	}
 
-	getLogStream( args: Record<string, string> ) {
+	getLogStream( args: { id: string; log: string } ) {
 		const urlObj = new URL( '/stream-log', BASE_URL );
 		urlObj.search = new URLSearchParams( args ).toString();
 		const absUrl = urlObj.href;
@@ -163,8 +206,7 @@ function getStacks( config: Config ): Promise<string[]> {
 
 	// Cache miss, load again:
 	const vantage = new VantageAPI( config );
-	return vantage.fetch( 'stack/applications' )
-		.then( resp => resp.json() as Promise<ApplicationResponse[]> )
+	return vantage.request( 'stack/applications' )
 		.then( data => data.map( stack => stack.id ) )
 		.then( stacks => {
 			config.cache.set( 'stacks', {

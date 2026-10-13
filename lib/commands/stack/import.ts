@@ -1,8 +1,9 @@
+import type { DatabaseImportBody, UploadsImportBody } from '../../types/api-routes.ts';
 import type { ImportSession, TaskResult } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { fetchJSON, parseList, parseReplacements, streamLog } from './util.ts';
+import { parseList, parseReplacements, streamLog } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
@@ -23,7 +24,7 @@ const handler = async (argv: CliArguments) => {
 	}
 
 	// Offer to resume an existing session if one exists.
-	const sessions = await fetchJSON<ImportSession[]>(v, `stack/applications/${target}/${route}`).catch(() => []);
+	const sessions = await v.request(`stack/applications/${target}/${route}` as const).catch(() => []);
 	if (Array.isArray(sessions) && sessions.length > 0) {
 		const { choice } = await inquirer.prompt({
 			type: 'list',
@@ -42,36 +43,22 @@ const handler = async (argv: CliArguments) => {
 			return;
 		}
 	}
-	const body: Record<string, unknown> = {
-		from_application: argv.from,
-	};
+	let data;
 	if (type === 'database') {
-		if (argv.tables) {
-			body.tables = parseList(argv.tables);
-		}
-		if (argv.replace) {
-			body.replacements = parseReplacements(argv.replace);
-		}
-		if (argv.useMydumper) {
-			body.use_mydumper = true;
-		}
-		if (argv.postSync) {
-			body.post_sync = true;
-		}
+		const body: DatabaseImportBody = {
+			from_application: argv.from!,
+			tables: argv.tables ? parseList(argv.tables) : undefined,
+			replacements: argv.replace ? parseReplacements(argv.replace) : undefined,
+			use_mydumper: argv.useMydumper || undefined,
+			post_sync: argv.postSync || undefined,
+		};
+		data = await v.request(`stack/applications/${target}/import-database`, { method: 'POST', query: { stream: true }, body });
 	} else {
-		if (argv.uploadsPath) {
-			body.uploads_path = argv.uploadsPath;
-		}
-		if (argv.method) {
-			body.method = argv.method;
-		}
+		if (argv.method !== undefined && argv.method !== 'diff' && argv.method !== 'legacy') throw new Error('Invalid import method.');
+		const body: UploadsImportBody = { from_application: argv.from!, path: argv.uploadsPath, method: argv.method };
+		data = await v.request(`stack/applications/${target}/import-uploads`, { method: 'POST', query: { stream: true }, body });
 	}
 
-	const data = await fetchJSON<TaskResult | string>(v, `stack/applications/${target}/${route}?stream=true`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body),
-	});
 	const log = typeof data === 'string' ? data : data.log || data.task_id || '';
 	console.log(chalk.yellow(`Import started, resume later with:`));
 	console.log(chalk.yellow(`  altis-cli app import ${type} ${target} --resume ${log}\n`));

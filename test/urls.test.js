@@ -24,34 +24,34 @@ test('API URLs retain relative paths, authentication and stream query values', a
 	process.env.VANTAGE_URL = `${base}/api/`;
 	const { default: Vantage } = await import(`${directory}/vantage.${extension}`);
 	const vantage = new Vantage({ get: key => key === 'vantage_token' ? 'test-token' : undefined });
-	await vantage.fetch('stack/applications?limit=0');
-	await vantage.fetch('/health');
-	await vantage.fetch(`${base}/absolute`);
-	const stream = await vantage.getLogStream({ id: 'example-dev', log: 'example-dev/php', filter: 'a+b & c' });
+	await vantage.requestRaw('stack/applications');
+	await vantage.requestRaw('/api/stack/instances');
+	await vantage.requestRaw('stack/applications/app-dev/logs/cron', { query: { search: 'a+b & c', status: ['fail', 'success'] } });
+	const stream = await vantage.getLogStream({ id: 'example-dev', log: 'example-dev/php' });
 	try {
 		await once(stream, 'data');
 	} finally {
 		stream.destroy();
 	}
-	assert.deepEqual(requests.slice(0, 3).map(req => req.url), ['/api/stack/applications?limit=0', '/health', '/absolute']);
+	assert.deepEqual(requests.slice(0, 3).map(req => req.url), ['/api/stack/applications', '/api/stack/instances', '/api/stack/applications/app-dev/logs/cron?search=a%2Bb+%26+c&status%5B%5D=fail&status%5B%5D=success']);
 	assert.ok(requests.every(req => req.authorization === 'Bearer test-token'));
 	const streamURL = new URL(requests[3].url, base);
 	assert.equal(streamURL.pathname, '/stream-log');
-	assert.deepEqual(Object.fromEntries(streamURL.searchParams), { id: 'example-dev', log: 'example-dev/php', filter: 'a+b & c' });
+	assert.deepEqual(Object.fromEntries(streamURL.searchParams), { id: 'example-dev', log: 'example-dev/php' });
 });
 
-test('backup query retains repeated values and false and zero options', async () => {
+test('backup query retains false and zero options', async () => {
 	const { startBackup } = await import(`${directory}/commands/stack/sync-local/util.${extension}`);
 	let requested;
-	await startBackup({ fetch: async (url, options) => {
+	await startBackup({ requestRaw: async (url, options) => {
 		requested = { url, options };
 		return { ok: true, text: async () => ' task-id ' };
-	} }, 'example-dev', { database: 0, uploads: false, filter: ['a+b', 'a & b'] });
+	} }, 'example-dev', { database: 0, uploads: false });
 	const url = new URL(requested.url, 'https://example.com/api/');
+	url.search = new URLSearchParams(requested.options.query).toString();
 	assert.equal(url.pathname, '/api/stack/applications/example-dev/backups');
 	assert.equal(url.searchParams.get('database'), '0');
 	assert.equal(url.searchParams.get('uploads'), 'false');
-	assert.deepEqual(url.searchParams.getAll('filter'), ['a+b', 'a & b']);
 	assert.equal(url.searchParams.get('stream'), 'true');
 	assert.equal(requested.options.method, 'POST');
 });

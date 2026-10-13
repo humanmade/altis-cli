@@ -47,8 +47,7 @@ const handler = function ( argv: CliArguments ) {
 
 		const status = ora( `Fetching information for ${stack}` );
 		status.start();
-		v.fetch( `stack/applications/${ stack }?_embed` )
-			.then( resp => (resp.json() as Promise<ApplicationInfo>) )
+		v.request( `stack/applications/${ stack }`, { query: { _embed: true } } )
 			.then( data => {
 				status.stop();
 

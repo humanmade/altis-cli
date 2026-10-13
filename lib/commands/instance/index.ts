@@ -2,7 +2,7 @@ import { errorCode } from '../../types/errors.ts';
 import type { InstanceAccessRow, InstanceReport, InstanceResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { fetchJSON, confirm, printJSON, printTable } from '../stack/util.ts';
+import { confirm, printJSON, printTable } from '../stack/util.ts';
 import Vantage from '../../vantage.ts';
 
 function requireArg(value: unknown, message: string): asserts value {
@@ -16,7 +16,7 @@ const handler = async (argv: CliArguments) => {
 	const v = new Vantage(argv.config);
 
 	if (!group || group === 'list') {
-		const data = await fetchJSON<InstanceResponse[]>(v, 'stack/instances');
+		const data = await v.request('stack/instances');
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -30,7 +30,7 @@ const handler = async (argv: CliArguments) => {
 
 	if (group === 'info') {
 		requireArg(action, 'Usage: altis-cli instance info <instance>');
-		const data = await fetchJSON<InstanceResponse>(v, `stack/instances/${action}`);
+		const data = await v.request(`stack/instances/${action}` as const);
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -41,7 +41,7 @@ const handler = async (argv: CliArguments) => {
 
 	if (group === 'reports') {
 		requireArg(action, 'Usage: altis-cli instance reports <instance>');
-		const data = await fetchJSON<InstanceReport[]>(v, `stack/instances/${action}/reports`);
+		const data = await v.request(`stack/instances/${action}/reports` as const);
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -60,9 +60,9 @@ const handler = async (argv: CliArguments) => {
 	if (group === 'maintenance') {
 		requireArg(action, 'Usage: altis-cli instance maintenance <get|set> <instance>');
 		requireArg(id, 'Instance id is required.');
-		const url = `stack/instances/${id}/maintenance`;
+		const url = `stack/instances/${id}/maintenance` as const;
 		if (action === 'get') {
-			const data = await fetchJSON<InstanceAccessRow[]>(v, url);
+			const data = await v.request(url);
 			if (argv.json) {
 				printJSON(data);
 				return;
@@ -73,10 +73,10 @@ const handler = async (argv: CliArguments) => {
 		if (action !== 'set') {
 			throw new Error('Usage: altis-cli instance maintenance <get|set> <instance>');
 		}
-		const data = await fetchJSON<{ pending?: boolean }>(v, url, {
+		requireArg(argv.contact, '--contact <email> is required.');
+		const data = await v.request(url, {
 			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ contact: argv.contact }),
+			body: { contacts: [{ email: argv.contact }] },
 		});
 		if (argv.json) {
 			printJSON(data);
@@ -89,9 +89,9 @@ const handler = async (argv: CliArguments) => {
 	if (group === 'access') {
 		requireArg(action, 'Usage: altis-cli instance access <list|add|remove> <instance>');
 		requireArg(id, 'Instance id is required.');
-		const url = `stack/instances/${id}/access`;
+		const url = `stack/instances/${id}/access` as const;
 		if (action === 'list') {
-			const data = await fetchJSON<InstanceAccessRow[]>(v, url);
+			const data = await v.request(url);
 			if (argv.json) {
 				printJSON(data);
 				return;
@@ -107,13 +107,13 @@ const handler = async (argv: CliArguments) => {
 			return;
 		}
 		if (action === 'add') {
+			if (argv.role !== undefined && argv.role !== 'user' && argv.role !== 'developer') throw new Error('Invalid access role.');
 			requireArg(value, 'Email address is required.');
 			let data;
 			try {
-				data = await fetchJSON<{ pending?: boolean }>(v, url, {
+				data = await v.request(url, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email: value, role: argv.role }),
+					body: { email: value, role: argv.role },
 				});
 			} catch (err) {
 				if (errorCode(err) === 'cannot-update-self') {
@@ -135,7 +135,7 @@ const handler = async (argv: CliArguments) => {
 				return;
 			}
 			try {
-				await fetchJSON<InstanceResponse>(v, `${url}/${encodeURIComponent(value)}`, { method: 'DELETE' });
+				await v.request(`${url}/${encodeURIComponent(value)}` as const, { method: 'DELETE' });
 			} catch (err) {
 				if (errorCode(err) === 'cannot-update-self') {
 					throw new Error('You cannot remove your own instance access.');

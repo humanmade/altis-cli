@@ -2,10 +2,10 @@ import { tailStream } from '../../log-tail.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getApp, buildQuery, parseKeyValueArgs, printJSON } from './util.ts';
+import { getApp, parseKeyValueArgs, printJSON } from './util.ts';
 import Vantage from '../../vantage.ts';
 
-const LOG_ROUTES: Record<string, string> = {
+const LOG_ROUTES = {
 	php: 'logs/php',
 	nginx: 'logs/nginx',
 	access: 'logs/access',
@@ -19,7 +19,7 @@ const LOG_ROUTES: Record<string, string> = {
 	'es-index': 'logs/elasticsearch/index',
 	'es-error': 'logs/elasticsearch/error',
 	nodejs: 'nodejs/logs/nodejs',
-};
+} as const;
 const STREAM_LOGS = new Set(['php', 'nginx', 'nodejs']);
 
 function printLogs(logs: unknown) {
@@ -65,7 +65,7 @@ const handler = async (argv: CliArguments) => {
 	const v = new Vantage(argv.config);
 	const type = argv.type || '';
 
-	if (!LOG_ROUTES[type]) {
+	if (!(type in LOG_ROUTES)) {
 		throw new Error(`Unsupported log type "${type}". Supported types: ${Object.keys(LOG_ROUTES).join(', ')}`);
 	}
 	if (argv.tail) {
@@ -85,22 +85,21 @@ const handler = async (argv: CliArguments) => {
 		throw new Error('--status is only supported for cron and email logs.');
 	}
 
-	const params = {
-		after: argv.after,
-		before: argv.before,
-		filterPattern: argv.search,
-		next_token: argv.nextToken,
-		format: argv.format,
-		download: argv.output ? true : undefined,
-		filter: argv.filter ? parseKeyValueArgs(argv.filter) : undefined,
-		status: argv.status,
-	};
-	const url = `stack/applications/${app}/${LOG_ROUTES[type]}${buildQuery(params)}`;
+	const range = { after: argv.after, before: argv.before };
+	const params = type === 'access'
+		? { ...range, format: argv.format as 'json' | 'csv' | undefined, download: argv.output ? true : undefined, filter: argv.filter ? parseKeyValueArgs(argv.filter) : undefined }
+		: type === 'cron' || type === 'email'
+			? { ...range, search: argv.search, status: argv.status as ('fail' | 'success')[] | undefined }
+			: STREAM_LOGS.has(type)
+				? { ...range, search: argv.search, next_token: argv.nextToken }
+				: { ...range, search: argv.search };
+
+	const url = `stack/applications/${app}/${LOG_ROUTES[type as keyof typeof LOG_ROUTES]}` as const;
 
 	if (type === 'access') {
-		const resp = await v.fetch(url);
+		const resp = await v.requestRaw(url, { query: params });
 		if (!resp.ok) {
-			const data = await (resp.json().catch(() => ({})) as Promise<{ message?: string }>);
+			const data = await resp.json().catch(() => ({ message: undefined }));
 			throw new Error(data.message || resp.statusText);
 		}
 		if (argv.output) {
@@ -124,9 +123,9 @@ const handler = async (argv: CliArguments) => {
 		return;
 	}
 
-	const resp = await v.fetch(url);
+	const resp = await v.requestRaw(url, { query: params });
 	if (!resp.ok) {
-		const errData = await (resp.json().catch(() => ({})) as Promise<{ message?: string }>);
+		const errData = await resp.json().catch(() => ({ message: undefined }));
 		throw new Error(errData.message || resp.statusText);
 	}
 	const data = await resp.json();

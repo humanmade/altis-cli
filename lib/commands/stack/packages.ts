@@ -1,7 +1,7 @@
 import { errorStatus } from '../../types/errors.ts';
 import type { Package } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
-import { getApp, fetchJSON, printJSON, printTable } from './util.ts';
+import { getApp, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
@@ -10,7 +10,8 @@ const handler = async (argv: CliArguments) => {
 	const suffix = argv.build ? `/${argv.build}` : '';
 	let packages;
 	try {
-		packages = await fetchJSON<Package[]>(v, `stack/applications/${app}/packages${suffix}`);
+		const url = argv.build ? `stack/applications/${app}/packages/${argv.build}` as const : `stack/applications/${app}/packages` as const;
+		packages = await v.request(url);
 	} catch (err) {
 		if (errorStatus(err) === 404) {
 			throw new Error('No active build found for this application.');

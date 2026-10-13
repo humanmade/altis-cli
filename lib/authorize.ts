@@ -5,6 +5,9 @@ import fetch from 'node-fetch';
 import open from 'open';
 import qs from 'querystring';
 
+interface OAuthTokenRequest { grant_type: 'authorization_code'; code: string; client_id: string; client_secret: string; }
+interface OAuthTokenResponse { access_token: string; }
+
 interface AuthorizationOptions {
 	endpoints: { authorize: string; exchange: string };
 	key: string;
@@ -38,7 +41,7 @@ class Authenticator {
 
 	exchangeCode( code: string ) {
 		// Exchange for a token.
-		const params = {
+		const params: OAuthTokenRequest = {
 			grant_type: 'authorization_code',
 			code,
 			client_id: this.options.key,
@@ -49,12 +52,12 @@ class Authenticator {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-			body: qs.stringify( params ),
+			body: qs.stringify( { ...params } ),
 		};
 		return fetch( this.options.endpoints.exchange, opts )
-			.then( resp => resp.json() )
+			.then( resp => resp.json() as Promise<OAuthTokenResponse> )
 			.then( data => {
-				const token = (data as { access_token: string }).access_token;
+				const token = data.access_token;
 				return token;
 			} );
 	}

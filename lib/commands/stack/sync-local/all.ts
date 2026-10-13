@@ -1,3 +1,4 @@
+import type { BackupQuery } from '../../../types/api-routes.ts';
 import { errorMessage } from '../../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.ts';
 import chalk from 'chalk';
@@ -180,7 +181,7 @@ const handler = async function ( argv: CliArguments ) {
 					resolvedUploadsPath = `sites/${ siteIds[0] }`;
 				}
 			}
-			const opts = {
+			const opts: Omit<BackupQuery, 'stream'> = {
 				database: 1,
 				uploads: 1,
 				...( tableList.length ? { tables: tableList } : {} ),

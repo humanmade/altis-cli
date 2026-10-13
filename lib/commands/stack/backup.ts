@@ -2,17 +2,16 @@ import type { CliArguments, CommandBuilder, CommandDefinition } from '../../type
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { stringify } from 'querystring';
+import type { BackupQuery } from '../../types/api-routes.ts';
 import { getStack, streamLog } from './util.ts';
 import Vantage from '../../vantage.ts';
 
-function startBackup( vantage: Vantage, stack: string, args: Record<string, string | number> ) {
+function startBackup( vantage: Vantage, stack: string, args: Pick<BackupQuery, 'database' | 'uploads'> ) {
 	console.log( `Starting backup for ${stack}...` );
 
-	const url = `stack/applications/${stack}/backups?${ stringify( { ...args, stream: 'true' } ) }`;
+	const url = `stack/applications/${stack}/backups` as const;
 
-	const opts = { method: 'POST' };
-	return vantage.fetch( url, opts ).then( resp => {
+	return vantage.requestRaw( url, { method: 'POST', query: { ...args, stream: true } } ).then( resp => {
 		return resp.text().then( text => {
 			if ( ! resp.ok ) {
 				throw new Error( text );
@@ -33,7 +32,7 @@ const handler = function ( argv: CliArguments ) {
 			return;
 		}
 
-		const opts = {
+		const opts: Pick<BackupQuery, 'database' | 'uploads'> = {
 			database: argv.database ? 1 : 0,
 			uploads:  argv.uploads  ? 1 : 0,
 		};

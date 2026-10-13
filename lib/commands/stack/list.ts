@@ -11,7 +11,7 @@ const handler = function ( argv: CliArguments ) {
 	const { config } = argv;
 
 	const v = new Vantage( config );
-	const vPromise = v.fetch( 'stack/applications' ).then( resp => (resp.json() as Promise<ApplicationResponse[]>) );
+	const vPromise = v.request( 'stack/applications' );
 
 	const status = ora( 'Fetching applications…' );
 	status.start();
