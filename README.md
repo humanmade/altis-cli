@@ -178,7 +178,7 @@ normal live sessions; it does not inject packet loss or exercise KMS negotiation
 For version comparisons, `--keep-going` continues after assertion failures on a
 healthy session and retains a failing exit status. Transport errors still stop the run.
 
-The SSM dependency is temporarily pinned to the exact tested commit from
+The SSM dependency is temporarily pinned to the merged commit from
 [humanmade/ssm#3](https://github.com/humanmade/ssm/pull/3). Replace the Git pin with
 the published release containing those fixes before releasing this CLI change;
-the existing npm `0.0.2` release predates that PR.
+the existing npm `0.0.2` release predates those fixes.
