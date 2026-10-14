@@ -22,7 +22,7 @@ class Authenticator {
 		this.options = options;
 		this.server = http.createServer();
 		// Create state to carry around.
-		this.state = new Buffer( crypto.randomBytes( 12 ) ).toString( 'base64' );
+		this.state = crypto.randomBytes( 12 ).toString( 'base64' );
 	}
 
 	startAuthorization() {
