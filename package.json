@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
-    "@humanmade/ssm": "git+https://github.com/humanmade/ssm.git#253e211d761c546399053d0ff933906efbf0b0f8",
+    "@humanmade/ssm": "^0.0.3",
     "ansi-escapes": "^2.0.0",
     "application-config": "^1.0.1",
     "base64-stream": "^1.0.0",
