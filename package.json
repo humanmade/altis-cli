@@ -19,11 +19,18 @@
     "wordpress"
   ],
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || ^22.12.0 || >=23"
   },
   "scripts": {
-    "test": "node --test",
-    "smoke": "node scripts/smoke.js"
+    "test": "node --test test/*.test.js",
+    "smoke": "node scripts/smoke.js",
+    "build": "node scripts/build.js",
+    "typecheck": "tsc --noEmit",
+    "pretest": "npm run build",
+    "prepare": "npm run build",
+    "sync-api-types": "node scripts/sync-api-types.js",
+    "dev": "node bin/altis-cli.ts",
+    "test:native": "node --test test-native/*.test.js"
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
@@ -56,7 +63,7 @@
     "yargs": "^18.0.0"
   },
   "bin": {
-    "altis-cli": "bin/altis-cli.js"
+    "altis-cli": "./dist/bin/altis-cli.js"
   },
   "overrides": {
     "@humanmade/ssm": {
@@ -64,7 +71,20 @@
     }
   },
   "files": [
-    "bin",
-    "lib"
-  ]
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/base64-stream": "^1.0.5",
+    "@types/bytes": "^3.1.6",
+    "@types/columnify": "^1.5.4",
+    "@types/loud-rejection": "^1.6.0",
+    "@types/node": "^22.20.5",
+    "@types/once": "^1.4.5",
+    "@types/progress-stream": "^2.0.5",
+    "@types/split2": "^4.2.3",
+    "@types/update-notifier": "^6.0.8",
+    "@types/ws": "^8.18.2",
+    "@types/yargs": "^17.0.35",
+    "typescript": "~5.9.3"
+  }
 }
