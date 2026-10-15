@@ -142,3 +142,27 @@ npm test
 CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
 live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
 `fetchJSON<T>()` describes expected API responses without validating them at runtime.
+
+### Application deployment settings
+
+Read or update the configured branch and automatic deployment of new builds:
+
+```bash
+altis-cli app deploys settings list example-prod
+altis-cli app deploys settings list example-prod --json
+altis-cli app deploys settings get branch example-prod
+altis-cli app deploys settings update branch staging example-prod
+altis-cli app deploys settings get autodeploy example-prod
+altis-cli app deploys settings update autodeploy true example-prod
+altis-cli app deploys settings update autodeploy false example-prod
+```
+
+`list --json` outputs `branch` and `autodeploy`; `get` prints the requested value.
+Updates change only the supplied setting, preserving the repository and the other
+setting. Changing the configured branch selects the source for future builds;
+it does not itself build or deploy the application.
+
+Autodeploy values accept `true`/`false`, `1`/`0`, `yes`/`no`, or `on`/`off
+(case-insensitive). Branch names must be non-empty. Updating requires application
+administration permission. Production apps can also have autodeploy enabled
+through this API, even though the dashboard disables their toggle.

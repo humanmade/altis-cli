@@ -1,3 +1,4 @@
+import settings from './deploys/settings.ts';
 import type { Deploy } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import { getApp, fetchJSON, printJSON, printTable } from './util.ts';
@@ -24,7 +25,7 @@ const handler = async (argv: CliArguments) => {
 
 export default {
 	command: 'deploys [stack]',
-	describe: 'List application deploys.',
-	builder: (yargs: CommandBuilder) => yargs.option('json', { type: 'boolean', describe: 'Print JSON output.' }),
+	describe: 'List application deploys and manage deployment settings.',
+	builder: (yargs: CommandBuilder) => yargs.command(settings).option('json', { type: 'boolean', describe: 'Print JSON output.' }),
 	handler,
 } satisfies CommandDefinition;
