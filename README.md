@@ -1,78 +1,144 @@
-# @humanmade/cli
+# altis-cli
 
-CLI for running Human Made utilities and commands.
+CLI for running Altis utilities and commands.
 
 
 ## Installing
 
-You need Node v5 or later.
+You need Node 20.19+, Node 22.12+, or Node 24+.
 
 ```sh
 # Install globally:
-npm install -g @humanmade/cli
+npm install -g altis-cli
 
 # Run it:
-hm
-```
+altis-cli
 
-You may also want to install the autocompletions (Bash only):
-
-```sh
-hm completion >> ~/.bashrc
+# Run with npx:
+npx altis-cli
 ```
 
 ## Available Commands
 
-Always use `hm help` for the most up-to-date list of commands.
-
-* `cs` - Coding standards helpers.
-	* `add` - Add coding standards to an existing repo.
-	* `run` - Run coding standards on the current repo.
-* `completion` - Bash auto-completion script.
-* `config` - CLI configuration.
-	* `reset` - Reset all configuration.
-	* `setup` - Set or change various configuration.
-	* `status` - Check what you've configured.
-* `issues` - Repo issue helpers.
-	* `list` - List open issues on the project's repo.
-	* `open` - Open an issue in your browser.
-* `prs` - Pull request helpers.
-	* `list` - List open pull requests on the project's repo.
-* `repo` - Repo helpers.
-	* `open` - Open the repo in your browser.
-* `stack` - HM Stack/hosting helpers.
+Always use `altis-cli help` for the most up-to-date list of commands.
+* `cli` - Meta CLI commands
+	* `clear-cache` - Clear the cache file
+* `config` - Configuration commands
+	* `reset` - Reset configuration
+	* `setup` - Set up configuration
+	* `status` - Show stored configuration
+* `app` - Application commands
+	* Alias for `stack`; preferred for Altis Dashboard application commands.
 	* `list` - List stacks available in our hosting.
 	* `backup [stack]` - Create a new backup for the stack.
 	* `backups [stack]` - List backups for the stack.
 	* `deploy [stack]` - Deploy a given stack.
+	* `logs [stack]` - Show logs with date ranges and filtering. Example: `altis-cli app logs example-dev-01 --type php --after "1 hour ago"`
+	* `builds [stack]` - List builds. Example: `altis-cli app builds example-dev-01 --json`
+	* `build [stack]` - Start a build. Example: `altis-cli app build example-dev-01`
+	* `build-cache clear [stack]` - Clear the build cache. Example: `altis-cli app build-cache clear example-dev-01 --yes`
+	* `deploys [stack]` - List deploys. Example: `altis-cli app deploys example-dev-01`
+	* `tasks` - List, cancel, or stream running tasks. Example: `altis-cli app tasks example-dev-01`
+	* `tasks cancel <id>` - Cancel a running task. Example: `altis-cli app tasks cancel <id> --yes`
+	* `tasks logs <id>` - Stream logs for a running task. Example: `altis-cli app tasks logs <id>`
+	* `database-tables [stack]` - List database tables. Example: `altis-cli app database-tables example-dev-01`
+	* `uploads-prefixes [stack]` - List uploads prefixes. Example: `altis-cli app uploads-prefixes example-dev-01`
+	* `import database <target> --from <source>` - Import database from another app. Example: `altis-cli app import database example-dev-01 --from example-stag-01`
+	* `import uploads <target> --from <source>` - Import uploads from another app. Example: `altis-cli app import uploads example-dev-01 --from example-stag-01`
+	* `variables` - Manage app/build variables. Example: `altis-cli app variables list example-dev-01 --type app`
+	* `domains` - Manage domains. Example: `altis-cli app domains list example-dev-01`
+	* `ip-list` - Manage IP allow/deny lists. Example: `altis-cli app ip-list get example-dev-01 --type allow`
+	* `ua-blocklist` - Manage user-agent blocklist. Example: `altis-cli app ua-blocklist get example-dev-01`
+	* `packages [stack]` - List packages. Example: `altis-cli app packages example-dev-01`
+	* `vulnerabilities [stack]` - List packages with vulnerabilities. Example: `altis-cli app vulnerabilities example-dev-01`
+	* `xray [stack]` - X-Ray live stats dashboard and trace browser. Examples:
+		* `altis-cli app xray example-dev-01` - Live auto-refreshing stats dashboard with sparklines and trace menu.
+		* `altis-cli app xray example-dev-01 --after "2 hours ago"` - Dashboard for a custom time window.
+		* `altis-cli app xray list-traces example-dev-01` - List recent traces as a table.
+		* `altis-cli app xray list-traces example-dev-01 --errors` - Filter to errors and faults.
+		* `altis-cli app xray list-traces example-dev-01 --slow 2` - Traces slower than 2s.
+		* `altis-cli app xray list-traces example-dev-01 --url-contains wp-json` - Filter by URL substring.
+		* `altis-cli app xray list-traces example-dev-01 --group-by url` - Group by URL.
+		* `altis-cli app xray list-traces example-dev-01 --json` - Output as JSON.
+		* `altis-cli app xray trace <id> example-dev-01` - Show a single trace by ID.
+		* `altis-cli app xray trace <id> example-dev-01 --json --output trace.json` - Export trace to JSON file.
+		* `altis-cli app xray trace-file trace.json` - Inspect a local trace JSON export.
+* `stack` - Legacy alias for application commands
 	* `info [stack]` - Get information for a stack.
-	* `sequel [stack]` - Connect to stack database via Sequel Pro.
 	* `scp <src> <dest>` - Copy a file to/from a stack.
 	* `ssh [stack]` - SSH into a stack.
 	* `php-logs [stack]` - Show PHP logs for a stack.
-* `tests` - Unit testing helpers.
-	* `add` - Add unit tests to your repo.
+* `instance` - Instance commands
+	* `list` - List instances. Example: `altis-cli instance list`
+	* `info <instance>` - Show instance details. Example: `altis-cli instance info example-dev-01`
+	* `access list <instance>` - List instance access. Example: `altis-cli instance access list example-dev-01`
+	* `access add <instance> <email>` - Add or invite a user. Example: `altis-cli instance access add example-dev-01 user@example.com --role developer`
+	* `access remove <instance> <user-id>` - Remove a user. Example: `altis-cli instance access remove example-dev-01 42 --yes`
+	* `maintenance get <instance>` - Show maintenance details. Example: `altis-cli instance maintenance get example-dev-01`
+	* `maintenance set <instance>` - Update maintenance contact. Example: `altis-cli instance maintenance set example-dev-01 --contact ops@example.com`
+	* `reports <instance>` - List reports. Example: `altis-cli instance reports example-dev-01`
+
+## Releasing
+
+See [RELEASING.md](RELEASING.md) for the release process and versioning
+guidelines.
 
 ## Credits
 
 Created by Ryan McCue to make your day better.
 
-Licensed under the MIT license. Copyright 2017 Human Made.
+Licensed under the MIT license. Copyright 2017-2023 Human Made.
 
+## Developing
+
+The CLI source in `bin/` and `lib/` is TypeScript. For local development, use
+**Node 22.18+ or Node 24+** to run the source with Node's native type stripping:
+
+```sh
+npm ci
+npm run dev -- app --help
+npm run dev -- app list
+# Equivalent direct invocation:
+node bin/altis-cli.ts app --help
+# Run the source-only native execution tests:
+npm run test:native
 ```
-      :+oo/      .hmNh    oyy. /dMMm:   /syo.
-   +dMMMMMMN.    oMMMy   :MMM+mMMMMMN oNMMMMm
-  mMNo-.dMMM+    dMMM+   oMMMMM+ dMMMmMdhMMMN
-  ++    sMMMo    NMMM.   yMMMM:  hMMMM+ .MMMd
-        yMMM+   .MMMM:/+oNMMMs   NMMMo  :MMMs
-        hMMMo/oydMMMMMMMMMMMM.   MMMN   oMMM+
-       /NMMMMMMNmMMMh-. .MMMd   :MMMh   yMMM-
-    +dMMMMMM/-  oMMMo   :MMMs   +MMMo   dMMM
-  oNMMy+MMMN    sMMMo   +MMM+   sMMM:   mMMM
-.mMMh. /MMMh    sMMMo   sMMM:   +ddy    hMMM-
-hMMy   sMMM+    +MMMh   hMMM.           :MMMNs+os
-MMM-   NMMN     .MMMM:  -/:.             :hNMMMMh
-dMMh:/mMMN:      +MMMMy:..-/s.               ..
- yMMMMMMy.        -hMMMMMMMNh-
-   -/:-              -///:.
+
+`dev` runs your current source immediately, with no build step or loader flags.
+Type stripping does not check types; run `npm run typecheck` to check your edits.
+Native execution is tested in CI on Node 22 and 24 with a source-only fixture
+that has no `dist/` directory. The tests cover command discovery, nested commands,
+package metadata, error types, and the executable through a symlink.
+
+The published npm package contains compiled JavaScript and continues to support
+Node 20.19+. To build and test that distribution locally:
+
+```sh
+npm run build
+node dist/bin/altis-cli.js app --help
+npm run typecheck
+npm test
 ```
+
+`npm run build` compiles strict TypeScript to Node ESM in `dist/`, rewrites relative
+`.ts` imports to `.js`, copies the OAuth success page stylesheet, and makes the
+executable runnable. `npm ci` and `npm pack` build automatically via `prepare`.
+You can edit and rerun `dev` after installation without rebuilding.
+
+### Vantage API types
+
+`lib/types/rest-api.ts` and `lib/types/xray-segments.ts` are snapshots of the
+Vantage frontend's generated REST types and X-Ray segment types. They were copied from the local frontend working copy, based on
+commit `f9a3811f6429a0eccfde81bea89261659ad4ea79`, including its current REST type
+changes. Keep them identical to the frontend sources rather than manually editing them:
+
+```sh
+# Regenerate REST types in the frontend first when its backend schema changes.
+npm run sync-api-types -- /path/to/vantage/frontend
+npm run typecheck
+npm test
+```
+
+CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
+live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
+`fetchJSON<T>()` describes expected API responses without validating them at runtime.
