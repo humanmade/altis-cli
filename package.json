@@ -30,11 +30,12 @@
     "prepare": "npm run build",
     "sync-api-types": "node scripts/sync-api-types.js",
     "dev": "node bin/altis-cli.ts",
-    "test:native": "node --test test-native/*.test.js"
+    "test:native": "node --test test-native/*.test.js",
+    "test:live:ssm": "node scripts/live-ssm.js"
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
-    "@humanmade/ssm": "^0.0.1",
+    "@humanmade/ssm": "^0.0.3",
     "ansi-escapes": "^2.0.0",
     "application-config": "^1.0.1",
     "base64-stream": "^1.0.0",
