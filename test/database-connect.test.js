@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { EventEmitter, once } from 'node:events';
 import net from 'node:net';
 import test from 'node:test';
-import command, { forwardSession, parseSession } from '../dist/lib/commands/stack/db-conn.js';
+import command, { forwardSession, parseSession } from '../dist/lib/commands/stack/database/connect.js';
 
 class Session extends EventEmitter {
   writes = [];

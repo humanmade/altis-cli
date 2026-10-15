@@ -41,6 +41,7 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `tasks` - List, cancel, or stream running tasks. Example: `altis-cli app tasks example-dev-01`
 	* `tasks cancel <id>` - Cancel a running task. Example: `altis-cli app tasks cancel <id> --yes`
 	* `tasks logs <id>` - Stream logs for a running task. Example: `altis-cli app tasks logs <id>`
+	* `database connect` - Open an experimental database tunnel from session JSON on stdin.
 	* `database-tables [stack]` - List database tables. Example: `altis-cli app database-tables example-dev-01`
 	* `uploads-prefixes [stack]` - List uploads prefixes. Example: `altis-cli app uploads-prefixes example-dev-01`
 	* `import database <target> --from <source>` - Import database from another app. Example: `altis-cli app import database example-dev-01 --from example-stag-01`
@@ -145,10 +146,10 @@ live in `lib/types/xray.ts`. Neither builds nor installs require a frontend chec
 
 ### Experimental database tunnel
 
-`altis-cli app db-conn --port 3307` accepts database SSM session JSON on stdin:
+`altis-cli app database connect --port 3307` accepts database SSM session JSON on stdin:
 
 ```sh
-cat session.json | altis-cli app db-conn --port 3307
+cat session.json | altis-cli app database connect --port 3307
 ```
 
 The JSON must contain `id` (SSM SessionId), `stream_url` (StreamUrl), and
@@ -162,7 +163,7 @@ This remains a development prototype. It requires the binary socket and
 handshake API from [humanmade/ssm#2](https://github.com/humanmade/ssm/pull/2),
 which is absent from the currently declared published dependency. The command
 reports that limitation before opening a connection. No stack argument is
-accepted yet: [Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547)
-adds an application method but does not expose a REST endpoint to create these
-sessions. Automatic session creation, dependency integration, and a live
+accepted yet. [Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547)
+adds session creation and cleanup endpoints that still need integrating into
+this command. Automatic session creation, dependency integration, and a live
 SSM/MySQL test are required before this command is ready to ship.

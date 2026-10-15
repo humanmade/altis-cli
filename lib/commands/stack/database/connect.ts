@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createServer, type Socket } from 'node:net';
 import { Duplex } from 'node:stream';
 import pkg from '@humanmade/ssm';
-import type { CliArguments, CommandDefinition } from '../../types/cli.ts';
+import type { CliArguments, CommandDefinition } from '../../../types/cli.ts';
 
 interface SessionData {
 	id: string;
@@ -156,7 +156,7 @@ export function forwardSession(session: PortSession, port = 3306) {
 }
 
 export default {
-	command: 'db-conn',
+	command: 'connect',
 	describe: 'Experimental database tunnel using session JSON from stdin (requires SSM socket support).',
 	builder: parser => {
 		parser.option('port', { describe: 'Local loopback port to listen on.', type: 'number', default: 3306 });
