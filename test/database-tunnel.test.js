@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { EventEmitter, once } from 'node:events';
 import net from 'node:net';
 import test from 'node:test';
-import command, { forwardSession, parseSession } from '../dist/lib/commands/stack/database/connect.js';
+import { forwardSession, parseSession } from '../dist/lib/database-tunnel.js';
+import command from '../dist/lib/commands/stack/database/tunnel.js';
 
 class Session extends EventEmitter {
   writes = [];
@@ -41,11 +42,11 @@ test('validates session input without echoing credentials in errors', () => {
   }
 });
 
-test('published SSM reports missing port support before reading stdin or opening a socket', async () => {
+test('published SSM reports missing port support before requesting a session or opening a socket', async () => {
   await assert.rejects(command.handler({ config: {}, port: 3306 }), /socket support/);
 });
 
-test('validates local port before consuming session input', async () => {
+test('validates local port before requesting a session', async () => {
   for (const port of [0, -1, 65536, 1.5, NaN]) {
     await assert.rejects(command.handler({ config: {}, port }), /--port/);
   }

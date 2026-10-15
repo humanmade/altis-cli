@@ -41,7 +41,9 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `tasks` - List, cancel, or stream running tasks. Example: `altis-cli app tasks example-dev-01`
 	* `tasks cancel <id>` - Cancel a running task. Example: `altis-cli app tasks cancel <id> --yes`
 	* `tasks logs <id>` - Stream logs for a running task. Example: `altis-cli app tasks logs <id>`
-	* `database connect` - Open an experimental database tunnel from session JSON on stdin.
+	* `database tunnel [stack]` - Forward a local port to the primary database.
+	* `database cli [stack]` - Open the local `mysql` client through a tunnel.
+	* `database sequel [stack]` - Open Sequel Ace/Sequel Pro through a tunnel (macOS).
 	* `database-tables [stack]` - List database tables. Example: `altis-cli app database-tables example-dev-01`
 	* `uploads-prefixes [stack]` - List uploads prefixes. Example: `altis-cli app uploads-prefixes example-dev-01`
 	* `import database <target> --from <source>` - Import database from another app. Example: `altis-cli app import database example-dev-01 --from example-stag-01`
@@ -144,26 +146,34 @@ CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistic
 live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
 `fetchJSON<T>()` describes expected API responses without validating them at runtime.
 
-### Experimental database tunnel
-
-`altis-cli app database connect --port 3307` accepts database SSM session JSON on stdin:
+### Database connections
 
 ```sh
-cat session.json | altis-cli app database connect --port 3307
+altis-cli app database tunnel example-dev-01 --port 3307
+altis-cli app database cli example-dev-01 --port 3307
+altis-cli app database sequel example-dev-01 --port 3307
 ```
 
-The JSON must contain `id` (SSM SessionId), `stream_url` (StreamUrl), and
-`token` (TokenValue). Treat this file as a credential. The session must use
-`AWS-StartPortForwardingSessionToRemoteHost`, targeting the sandbox instance
-and the desired database host on port 3306. The local listener binds to
-`127.0.0.1` and supports one database client connection; create a new session
-after that client disconnects. Ctrl-C closes the tunnel.
+All three commands create an SSM tunnel to the application's primary database,
+listening on `127.0.0.1`. Omit the stack argument to select an application
+interactively. `--port` defaults to 3306. Closing the client or pressing Ctrl-C
+closes the tunnel and requests remote session termination from Vantage.
 
-This remains a development prototype. It requires the binary socket and
-handshake API from [humanmade/ssm#2](https://github.com/humanmade/ssm/pull/2),
-which is absent from the currently declared published dependency. The command
-reports that limitation before opening a connection. No stack argument is
-accepted yet. [Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547)
-adds session creation and cleanup endpoints that still need integrating into
-this command. Automatic session creation, dependency integration, and a live
-SSM/MySQL test are required before this command is ready to ship.
+`tunnel` keeps the connection open for your own database client and credentials.
+`cli` launches the local `mysql` executable with the terminal attached.
+`sequel` opens Sequel Ace or Sequel Pro on macOS, matching local-server's
+`composer server db sequel` naming. Keep the terminal running while the GUI is
+connected. The current transport supports one client connection per session.
+
+`cli` and `sequel` obtain credentials from the existing database-server endpoint;
+they require an account allowed to retrieve those credentials. Passwords are
+written to private temporary files, removed when the command ends, and excluded
+from process arguments and environment variables.
+
+These commands require the creation and cleanup endpoints in
+[Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547), plus the
+binary socket and handshake API from
+[humanmade/ssm#2](https://github.com/humanmade/ssm/pull/2). Published SSM 0.0.3
+currently lacks that API; the commands report this before creating a remote
+session. Dependency integration and a real SSM/MySQL test remain necessary
+before production use.

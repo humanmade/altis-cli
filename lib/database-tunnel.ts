@@ -1,8 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { createServer, type Socket } from 'node:net';
 import { Duplex } from 'node:stream';
-import pkg from '@humanmade/ssm';
-import type { CliArguments, CommandDefinition } from '../../../types/cli.ts';
 
 interface SessionData {
 	id: string;
@@ -28,7 +25,7 @@ export function parseSession(raw: string): SessionData {
 	try {
 		data = JSON.parse(raw);
 	} catch {
-		throw new Error('Expected session JSON on stdin (id, stream_url, token).');
+		throw new Error('Expected database session JSON (id, stream_url, token).');
 	}
 	if (!data || typeof data !== 'object' || !['id', 'stream_url', 'token'].every(
 		key => typeof (data as Record<string, unknown>)[key] === 'string' && (data as Record<string, string>)[key].length > 0
@@ -154,34 +151,3 @@ export function forwardSession(session: PortSession, port = 3306) {
 	// Do not send application-level keepalive data into the database stream.
 	return { server, done, close: () => stop() };
 }
-
-export default {
-	command: 'connect',
-	describe: 'Experimental database tunnel using session JSON from stdin (requires SSM socket support).',
-	builder: parser => {
-		parser.option('port', { describe: 'Local loopback port to listen on.', type: 'number', default: 3306 });
-	},
-	handler: async (argv: CliArguments) => {
-		const port = argv.port ?? 3306;
-		if (!Number.isInteger(port) || port < 1 || port > 65535) {
-			throw new Error('--port must be an integer between 1 and 65535.');
-		}
-		if (process.stdin.isTTY) {
-			throw new Error('Pipe database SSM session JSON into this command. Vantage session creation is not implemented yet.');
-		}
-		// Check the prototype before opening a WebSocket. Published SSM releases
-		// currently support terminal sessions only; see humanmade/ssm#2.
-		const Session = pkg.default;
-		const prototype = Session.prototype as unknown as Partial<PortSession>;
-		if (typeof prototype.writeRaw !== 'function' || typeof prototype.sendHandshakeResponse !== 'function') {
-			throw new Error('Database tunnels require @humanmade/ssm socket support (humanmade/ssm#2); the installed version does not support it.');
-		}
-		const data = parseSession(readFileSync(0, 'utf8'));
-		const session = new Session(data.stream_url, data.id, data.token) as unknown as PortSession;
-		const forwarding = forwardSession(session, port);
-		forwarding.server.on('listening', () => {
-			console.log(`Database tunnel listening on 127.0.0.1:${port}. One client connection per session; Ctrl-C to close.`);
-		});
-		await forwarding.done;
-	},
-} satisfies CommandDefinition;

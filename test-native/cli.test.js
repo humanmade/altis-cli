@@ -37,6 +37,9 @@ test('native source executable reads package metadata without a build', () => {
 test('native command discovery imports existing commands and nested namespaces', () => {
 	assert.match(run(['--help']), /Commands:/);
 	for (const scope of ['app', 'stack']) {
+		for (const action of ['tunnel', 'cli', 'sequel']) {
+			assert.match(run([scope, 'database', action, '--help']), new RegExp(`database ${action}`));
+		}
 		assert.match(run([scope, 'variables', '--help']), /variables <action> \[stack\]/);
 		assert.match(run([scope, 'sync-local', 'database', 'example-dev', '--help']), /database/);
 		assert.match(run([scope, 'xray', 'list-traces', '--help']), /list-traces/);
