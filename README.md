@@ -142,3 +142,27 @@ npm test
 CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
 live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
 `fetchJSON<T>()` describes expected API responses without validating them at runtime.
+
+### Experimental database tunnel
+
+`altis-cli app db-conn --port 3307` accepts database SSM session JSON on stdin:
+
+```sh
+cat session.json | altis-cli app db-conn --port 3307
+```
+
+The JSON must contain `id` (SSM SessionId), `stream_url` (StreamUrl), and
+`token` (TokenValue). Treat this file as a credential. The session must use
+`AWS-StartPortForwardingSessionToRemoteHost`, targeting the sandbox instance
+and the desired database host on port 3306. The local listener binds to
+`127.0.0.1` and supports one database client connection; create a new session
+after that client disconnects. Ctrl-C closes the tunnel.
+
+This remains a development prototype. It requires the binary socket and
+handshake API from [humanmade/ssm#2](https://github.com/humanmade/ssm/pull/2),
+which is absent from the currently declared published dependency. The command
+reports that limitation before opening a connection. No stack argument is
+accepted yet: [Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547)
+adds an application method but does not expose a REST endpoint to create these
+sessions. Automatic session creation, dependency integration, and a live
+SSM/MySQL test are required before this command is ready to ship.

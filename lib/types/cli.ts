@@ -47,6 +47,7 @@ export interface CliArguments {
 	origin?: string;
 	output?: string;
 	path?: string;
+	port?: number;
 	pattern?: (string | number)[];
 	postSync?: boolean;
 	replace?: (string | number)[];
