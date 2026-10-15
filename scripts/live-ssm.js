@@ -94,9 +94,14 @@ export class LiveSession {
 
 	async close() {
 		if (this.disconnected) return;
-		this.session.close();
-		try { await this.waitClosed(); }
-		finally { if (!this.disconnected) this.session.webSocket?.terminate?.(); }
+		try {
+			// Closing the WebSocket can leave docker exec's shell running.
+			this.session.write('exit\n');
+			await this.waitClosed();
+		} finally {
+			this.session.close();
+			if (!this.disconnected) this.session.webSocket?.terminate?.();
+		}
 	}
 }
 
