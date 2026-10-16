@@ -18,12 +18,16 @@ async function endpoint(t, handler) {
 }
 
 test('OAuth login and exchange follow VANTAGE_URL and authentication waits for token persistence', async t => {
- const previous = process.env.VANTAGE_URL;
+ const previous = { VANTAGE_URL: process.env.VANTAGE_URL, VANTAGE_CLIENT_ID: process.env.VANTAGE_CLIENT_ID, VANTAGE_CLIENT_SECRET: process.env.VANTAGE_CLIENT_SECRET };
  process.env.VANTAGE_URL = 'https://staging.example/api/';
- t.after(() => { if (previous === undefined) delete process.env.VANTAGE_URL; else process.env.VANTAGE_URL = previous; });
+ process.env.VANTAGE_CLIENT_ID = 'staging-test-client';
+ process.env.VANTAGE_CLIENT_SECRET = 'staging-test-secret';
+ t.after(() => { for (const [key, value] of Object.entries(previous)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; } });
  let endpoints;
  t.mock.method(Authenticator.prototype, 'start', function() {
   endpoints = this.options.endpoints;
+  assert.equal(this.options.key, 'staging-test-client');
+  assert.equal(this.options.secret, 'staging-test-secret');
   return Promise.resolve('synthetic-token');
  });
  const { default: Vantage } = await import('../dist/lib/vantage.js');

@@ -34,8 +34,8 @@ const STACK_CACHE_LIFETIME = 24 * 60 * 60 * 1000;
 const BASE_URL = process.env.VANTAGE_URL || 'https://dashboard.altis-dxp.com/api/';
 const AUTH_ENDPOINT = new URL('/wp-login.php?action=oauth2_authorize', BASE_URL).href;
 const TOKEN_ENDPOINT = `${ BASE_URL }oauth2/access_token`;
-const OAUTH_KEY = 'za6qrd2teuev';
-const OAUTH_SECRET = 'kZCn1dluko2lout6gnDqsGqhYn9a7ICFX8YdOhBSd8hhD1w3';
+const OAUTH_KEY = process.env.VANTAGE_CLIENT_ID || 'za6qrd2teuev';
+const OAUTH_SECRET = process.env.VANTAGE_CLIENT_SECRET || 'kZCn1dluko2lout6gnDqsGqhYn9a7ICFX8YdOhBSd8hhD1w3';
 const OAUTH_PORT = 7277; // ASCII "H" + "M"
 
 class VantageAPI {
