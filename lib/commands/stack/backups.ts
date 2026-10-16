@@ -34,8 +34,7 @@ const handler = (argv: CliArguments) => {
 		const status = ora( `Loading backups for ${ stack }…` );
 		status.start();
 
-		v.fetch( `stack/applications/${ stack }/backups` )
-			.then( resp => (resp.json() as Promise<Backup[]>) )
+		v.request( `stack/applications/${ stack }/backups` )
 			.then( backups => {
 				status.succeed();
 

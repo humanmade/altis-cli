@@ -11,19 +11,9 @@ function deploy( vantage: Vantage, stack: string, force = false, buildId: string
 
 	console.log( `Deploying ${stack}...` );
 
-	let url = `stack/applications/${stack}/deploys?stream=true`;
-	if ( force ) {
-		url += '&force=true';
-	}
-
-	if ( buildId ) {
-		url += `&build=${ buildId }`;
-	}
-
-	const opts = { method: 'POST' };
-	return vantage.fetch( url, opts ).then( resp => {
+	return vantage.requestRaw( `stack/applications/${stack}/deploys`, { method: 'POST', query: { stream: true, force: force || undefined, build: buildId || undefined } } ).then( resp => {
 		if ( ! resp.ok ) {
-			return (resp.json() as Promise<{ message?: string; code?: string }>).then( data => {
+			return resp.json().then( data => {
 				// If this isn't a WP error, fall back to using the text instead.
 				if ( ! data.message || ! data.code ) {
 					return resp.text().then( text => {
@@ -67,8 +57,7 @@ const handler = (argv: CliArguments) => {
 		const status = ora( `Loading builds for ${ stack }…` );
 		status.start();
 
-		v.fetch( `stack/applications/${ stack }/builds` )
-			.then( resp => (resp.json() as Promise<Build[]>) )
+		v.request( `stack/applications/${ stack }/builds` )
 			.then( builds => {
 				status.succeed();
 

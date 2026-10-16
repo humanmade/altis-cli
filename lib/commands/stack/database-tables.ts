@@ -1,11 +1,11 @@
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
-import { getApp, fetchJSON, printJSON, printTable } from './util.ts';
+import { getApp, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const data = await fetchJSON<string[] | { tables: string[] }>(v, `stack/applications/${app}/database-tables`);
+	const data = await v.request(`stack/applications/${app}/database-tables` as const);
 	const tables = Array.isArray(data) ? data : (data.tables || []);
 	if (argv.json) {
 		printJSON(tables);

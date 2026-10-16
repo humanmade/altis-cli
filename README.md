@@ -75,7 +75,7 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `access add <instance> <email>` - Add or invite a user. Example: `altis-cli instance access add example-dev-01 user@example.com --role developer`
 	* `access remove <instance> <user-id>` - Remove a user. Example: `altis-cli instance access remove example-dev-01 42 --yes`
 	* `maintenance get <instance>` - Show maintenance details. Example: `altis-cli instance maintenance get example-dev-01`
-	* `maintenance set <instance>` - Update maintenance contact. Example: `altis-cli instance maintenance set example-dev-01 --contact ops@example.com`
+	* `maintenance set <instance>` - Add a maintenance contact, preserving existing contacts and ignoring duplicates. Example: `altis-cli instance maintenance set example-dev-01 --contact ops@example.com`
 	* `reports <instance>` - List reports. Example: `altis-cli instance reports example-dev-01`
 
 ## Releasing
@@ -142,3 +142,32 @@ npm test
 CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
 live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
 `fetchJSON<T>()` describes expected API responses without validating them at runtime.
+
+### Typed API requests
+
+Vantage requests infer request and response contracts from the path and HTTP
+method. Contracts for the REST operations used by the CLI live in
+`lib/types/api-routes.ts`, with shared responses from the synchronized Vantage
+frontend types and request fields checked against the backend endpoint handlers.
+
+```ts
+const maintenance = await vantage.request(
+    `/api/stack/instances/${id}/maintenance`,
+    {
+        method: 'PATCH',
+        body: { contacts: [{ email: contact }] },
+    },
+);
+```
+
+GET is the default method. Relative paths such as `stack/instances/${id}/maintenance`
+also work with the configured API base. Pass query parameters in `query` and JSON
+objects in `body`; the client performs serialization. Use `as const` for a path
+stored in a variable to preserve inference. `requestRaw()` checks the same contract
+and retains response headers, download bodies, and HTTP status handling. The raw
+transport is private; commands cannot choose arbitrary response generics.
+
+`npm run typecheck` includes compile-time regression checks for invalid paths,
+methods, queries and payloads. These contracts provide static checking, not runtime
+validation of server responses. OAuth uses its own typed form request; signed
+backup downloads are binary transfers rather than REST JSON requests.

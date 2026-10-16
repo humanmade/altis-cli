@@ -2,7 +2,7 @@ import { errorCode } from '../../types/errors.ts';
 import type { TaskResult } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { getApp, fetchJSON, streamLog } from './util.ts';
+import { getApp, streamLog } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
@@ -15,7 +15,7 @@ const handler = async (argv: CliArguments) => {
 
 	let data;
 	try {
-		data = await fetchJSON<TaskResult | string>(v, `stack/applications/${app}/builds?stream=true`, { method: 'POST' });
+		data = await v.request(`stack/applications/${app}/builds` as const, { query: { stream: true }, method: 'POST' });
 	} catch (err) {
 		if (errorCode(err) === 'not-supported') {
 			throw new Error('Builds are not supported for this application type.');

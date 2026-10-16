@@ -1,12 +1,12 @@
 import type { Build } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
-import { getApp, fetchJSON, printJSON, printTable } from './util.ts';
+import { getApp, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const builds = await fetchJSON<Build[]>(v, `stack/applications/${app}/builds`);
+	const builds = await v.request(`stack/applications/${app}/builds` as const);
 	if (argv.json) {
 		printJSON(builds);
 		return;

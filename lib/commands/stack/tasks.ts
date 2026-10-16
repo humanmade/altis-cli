@@ -1,7 +1,7 @@
 import type { RunningTasksResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { fetchJSON, confirm, printJSON, printTable, streamLog } from './util.ts';
+import { confirm, printJSON, printTable, streamLog } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
@@ -15,7 +15,7 @@ const handler = async (argv: CliArguments) => {
 			console.log(chalk.yellow('Cancelled.'));
 			return;
 		}
-		const data = await fetchJSON<unknown>(v, `stack/running-tasks/${encodeURIComponent(argv.id)}`, { method: 'DELETE' });
+		const data = await v.request(`stack/running-tasks/${encodeURIComponent(argv.id)}` as const, { method: 'DELETE' });
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -33,7 +33,7 @@ const handler = async (argv: CliArguments) => {
 		return;
 	}
 
-	const tasks = await fetchJSON<RunningTasksResponse[]>(v, 'stack/running-tasks');
+	const tasks = await v.request('stack/running-tasks');
 	const filtered = argv.action ? tasks.filter(task => task.application === argv.action) : tasks;
 	if (argv.json) {
 		printJSON(filtered);

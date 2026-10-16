@@ -1,5 +1,4 @@
 import type { Options as TableOptions } from 'columnify';
-import type { RequestInit } from 'node-fetch';
 import type { CliArguments, CommandBuilder } from '../../types/cli.ts';
 import chalk from 'chalk';
 import columnify from 'columnify';
@@ -7,15 +6,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import Vantage, { getStacks } from '../../vantage.ts';
 
-export class ApiError extends Error {
-	status: number;
-	code?: string;
-	constructor(message: string, status: number, code?: string) {
-		super(message);
-		this.status = status;
-		this.code = code;
-	}
-}
+export { ApiError } from '../../api-error.ts';
 interface LogStatus {
 	spinner: ReturnType<typeof ora>;
 	step: string;
@@ -50,28 +41,6 @@ export function getStack(argv: Pick<CliArguments, 'app' | 'stack'> & Partial<Pic
 
 export function getApp(argv: CliArguments) {
 	return getStack(argv);
-}
-
-export async function fetchJSON<T = unknown>(vantage: Vantage, url: string, opts: RequestInit = {}): Promise<T> {
-	const resp = await vantage.fetch(url, opts);
-	let data: unknown = null;
-	const text = await resp.text();
-	if (text) {
-		try {
-			data = JSON.parse(text);
-		} catch (e) {
-			data = text;
-		}
-	}
-
-	if (!resp.ok) {
-		const errorData = data && typeof data === 'object' ? data as { message?: unknown; code?: unknown } : {};
-		const message = typeof errorData.message === 'string' ? errorData.message : text || resp.statusText;
-		const err = new ApiError(message, resp.status, typeof errorData.code === 'string' ? errorData.code : undefined);
-		throw err;
-	}
-
-	return data as T;
 }
 
 export function buildQuery(params: Record<string, unknown> = {}) {

@@ -1,6 +1,6 @@
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm } from './util.ts';
+import { getApp, confirm } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
@@ -13,7 +13,7 @@ const handler = async (argv: CliArguments) => {
 		return;
 	}
 	const v = new Vantage(argv.config);
-	await fetchJSON<unknown>(v, `stack/applications/${app}/builds/build-cache`, { method: 'DELETE' });
+	await v.request(`stack/applications/${app}/builds/build-cache` as const, { method: 'DELETE' });
 	console.log(chalk.green('Build cache cleared.'));
 };
 

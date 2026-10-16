@@ -1,12 +1,12 @@
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
-import { getApp, fetchJSON, printJSON, printTable } from './util.ts';
+import { getApp, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const data = await fetchJSON<(string | { prefix: string })[] | { prefixes?: (string | { prefix: string })[]; uploads_prefixes?: (string | { prefix: string })[] }>(v, `stack/applications/${app}/uploads-prefixes`);
-	const prefixes = Array.isArray(data) ? data : (data.prefixes || data.uploads_prefixes || []);
+	const data = await v.request(`stack/applications/${app}/uploads-prefixes` as const);
+	const prefixes = data.prefixes;
 	if (argv.json) {
 		printJSON(prefixes);
 		return;

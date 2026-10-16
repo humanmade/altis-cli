@@ -2,7 +2,7 @@ import { errorCode } from '../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.ts';
+import { getApp, confirm, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 function readValues(file: string | undefined, inline: string | (string | number)[] = []) {
@@ -27,11 +27,11 @@ const handler = async (argv: CliArguments) => {
 	}
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const url = `stack/applications/${app}/ua-blocklist`;
+	const url = `stack/applications/${app}/ua-blocklist` as const;
 
 	const fetchUABlocklist = async () => {
 		try {
-			return await fetchJSON<string[] | { patterns: string[] }>(v, url);
+			return await v.request(url);
 		} catch (err) {
 			if (errorCode(err) === 'feature_disabled') {
 				throw new Error('User-agent blocking is not enabled for this application.');
@@ -46,23 +46,22 @@ const handler = async (argv: CliArguments) => {
 			printJSON(data);
 			return;
 		}
-		const values = Array.isArray(data) ? data : data.patterns;
+		const values = data;
 		printTable(values.map(pattern => ({ pattern })));
 		return;
 	}
 
 	const currentData = await fetchUABlocklist();
-	const current = Array.isArray(currentData) ? currentData : currentData.patterns || [];
+	const current = currentData;
 	const next = readValues(argv.file, argv.pattern);
 	printDiff(current, next);
 	if (!argv.yes && !await confirm(`Replace user-agent blocklist for ${app}?`)) {
 		console.log(chalk.yellow('Cancelled.'));
 		return;
 	}
-	const data = await fetchJSON<string[] | { patterns: string[] }>(v, url, {
+	const data = await v.request(url, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ patterns: next }),
+		body: { patterns: next },
 	});
 	if (argv.json) {
 		printJSON(data);

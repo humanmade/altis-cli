@@ -2,7 +2,7 @@ import { errorCode } from '../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.ts';
+import { getApp, confirm, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 function readValues(file: string | undefined, inline: string | (string | number)[] = []) {
@@ -25,16 +25,16 @@ const handler = async (argv: CliArguments) => {
 	if (!['get', 'set'].includes(action)) {
 		throw new Error('Usage: altis-cli app ip-list <get|set> [app] --type allow|deny');
 	}
-	if (!argv.type || !['allow', 'deny'].includes(argv.type)) {
+	if (!argv.type || (argv.type !== 'allow' && argv.type !== 'deny')) {
 		throw new Error('--type must be "allow" or "deny".');
 	}
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const url = `stack/applications/${app}/iplists/${argv.type}`;
+	const url = `stack/applications/${app}/iplists/${argv.type}` as const;
 
 	const fetchIPList = async () => {
 		try {
-			return await fetchJSON<Record<string, string[]>>(v, url);
+			return await v.request(url);
 		} catch (err) {
 			if (errorCode(err) === 'feature_disabled') {
 				throw new Error('IP management is not enabled for this application.');
@@ -49,23 +49,22 @@ const handler = async (argv: CliArguments) => {
 			printJSON(data);
 			return;
 		}
-		const values = data.ip_addresses || data;
+		const values = data;
 		printTable(values.map(ip => ({ ip })));
 		return;
 	}
 
 	const currentData = await fetchIPList();
-	const current = currentData.ip_addresses || currentData || [];
+	const current = currentData;
 	const next = readValues(argv.file, argv.ip);
 	printDiff(current, next);
 	if (!argv.yes && !await confirm(`Replace ${argv.type} IP list for ${app}?`)) {
 		console.log(chalk.yellow('Cancelled.'));
 		return;
 	}
-	const data = await fetchJSON<Record<string, string[]>>(v, url, {
+	const data = await v.request(url, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ ip_addresses: next }),
+		body: { ip_addresses: next },
 	});
 	if (argv.json) {
 		printJSON(data);

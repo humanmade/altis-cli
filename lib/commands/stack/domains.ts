@@ -1,7 +1,7 @@
 import type { Domain } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.ts';
+import { getApp, confirm, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
@@ -11,10 +11,10 @@ const handler = async (argv: CliArguments) => {
 	}
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const base = `stack/applications/${app}/domains`;
+	const base = `stack/applications/${app}/domains` as const;
 
 	if (action === 'list') {
-		const data = await fetchJSON<Domain[]>(v, base);
+		const data = await v.request(base);
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -35,10 +35,9 @@ const handler = async (argv: CliArguments) => {
 	}
 
 	if (action === 'add') {
-		const data = await fetchJSON<Domain[]>(v, base, {
+		const data = await v.request(base, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ domains, origin: argv.origin }),
+			body: { domains, origin: argv.origin },
 		});
 		if (argv.json) {
 			printJSON(data);
@@ -54,12 +53,12 @@ const handler = async (argv: CliArguments) => {
 			console.log(chalk.yellow('Cancelled.'));
 			return;
 		}
-		await fetchJSON<Domain[]>(v, `${base}/${encodeURIComponent(domain)}`, { method: 'DELETE' });
+		await v.request(`${base}/${encodeURIComponent(domain)}` as const, { method: 'DELETE' });
 		console.log(chalk.green('Domain removed.'));
 		return;
 	}
 
-	await fetchJSON<Domain[]>(v, `${base}/${encodeURIComponent(domain)}/retry-failed-domain`, { method: 'POST' });
+	await v.request(`${base}/${encodeURIComponent(domain)}/retry-failed-domain` as const, { method: 'POST' });
 	console.log(chalk.green('Domain retry requested.'));
 };
 

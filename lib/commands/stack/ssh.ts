@@ -168,8 +168,8 @@ const handler = function ( argv: CliArguments ) {
 		const status = ora( `Starting session on ${stack}` );
 		status.start();
 
-		const url = `stack/applications/${stack}/cli/sessions`;
-		v.fetch( url, { method: 'POST' } ).then( resp => {
+		const url = `stack/applications/${stack}/cli/sessions` as const;
+		v.requestRaw( url, { method: 'POST' } ).then( resp => {
 			// hm-stack currently returns a 500 for invalid stacks, so we have to
 			// assume any failure is a 404: https://github.com/humanmade/hm-stack/issues/367
 			if ( ! resp.ok ) {
@@ -177,7 +177,7 @@ const handler = function ( argv: CliArguments ) {
 				return;
 			}
 
-			return (resp.json() as Promise<CliSession>).then( data => {
+			return (resp.json()).then( data => {
 				status.stop();
 				connect( data );
 			});

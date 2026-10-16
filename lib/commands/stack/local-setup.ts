@@ -15,8 +15,7 @@ const handler = (argv: CliArguments) => {
 		const v = new Vantage(argv.config);
 		const status = ora(`Loading repository for ${stack}…`);
 		status.start();
-		v.fetch(`stack/applications/${stack}`)
-			.then(resp => (resp.json() as Promise<ApplicationResponse>))
+		v.request(`stack/applications/${stack}` as const)
 			.then((repo: ApplicationResponse) => {
 				status.succeed();
 				const url = repo['git-deployment']['url'];

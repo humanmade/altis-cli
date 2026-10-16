@@ -1,3 +1,4 @@
+import type { BackupQuery } from '../../../types/api-routes.ts';
 import { errorMessage } from '../../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.ts';
 import chalk from 'chalk';
@@ -160,7 +161,7 @@ const handler = async function ( argv: CliArguments ) {
 				const siteTables = await resolveTablesForSiteIds( v, app, siteIdList );
 				tableList = [ ...new Set( [ ...tableList, ...siteTables ] ) ];
 			}
-			const opts = {
+			const opts: Omit<BackupQuery, 'stream'> = {
 				database: 1,
 				uploads: 0,
 				...( tableList.length ? { tables: tableList } : {} ),

@@ -3,7 +3,7 @@ import type { Variable } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getApp, fetchJSON, confirm, printJSON, printTable } from './util.ts';
+import { getApp, confirm, printJSON, printTable } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 function readStdin() {
@@ -15,15 +15,15 @@ const handler = async (argv: CliArguments) => {
 	if (!['list', 'get', 'set', 'delete'].includes(action)) {
 		throw new Error('Usage: altis-cli app variables <list|get|set|delete> [app] --type app|build');
 	}
-	if (!argv.type || !['app', 'build'].includes(argv.type)) {
+	if (!argv.type || (argv.type !== 'app' && argv.type !== 'build')) {
 		throw new Error('--type must be "app" or "build".');
 	}
 	const app = await getApp(argv);
 	const v = new Vantage(argv.config);
-	const base = `stack/applications/${app}/variables/${argv.type}`;
+	const base = `stack/applications/${app}/variables/${argv.type}` as const;
 
 	if (action === 'list') {
-		const data = await fetchJSON<Variable[]>(v, base);
+		const data = await v.request(base);
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -42,7 +42,7 @@ const handler = async (argv: CliArguments) => {
 	}
 
 	if (action === 'get') {
-		const data = await fetchJSON<Variable>(v, `${base}/${encodeURIComponent(argv.name)}`);
+		const data = await v.request(`${base}/${encodeURIComponent(argv.name)}` as const);
 		if (argv.json) {
 			printJSON(data);
 			return;
@@ -56,7 +56,7 @@ const handler = async (argv: CliArguments) => {
 			console.log(chalk.yellow('Cancelled.'));
 			return;
 		}
-		await fetchJSON<Variable>(v, `${base}/${encodeURIComponent(argv.name)}`, { method: 'DELETE' });
+		await v.request(`${base}/${encodeURIComponent(argv.name)}` as const, { method: 'DELETE' });
 		console.log(chalk.green('Variable deleted.'));
 		return;
 	}
@@ -75,7 +75,7 @@ const handler = async (argv: CliArguments) => {
 	};
 	let exists = false;
 	try {
-		await fetchJSON<Variable>(v, `${base}/${encodeURIComponent(argv.name)}`);
+		await v.request(`${base}/${encodeURIComponent(argv.name)}` as const);
 		exists = true;
 	} catch (err) {
 		if (errorStatus(err) !== 404) {
@@ -85,11 +85,9 @@ const handler = async (argv: CliArguments) => {
 	if (exists && argv.noSecret) {
 		throw new Error('Secret status cannot be changed for an existing variable.');
 	}
-	const data = await fetchJSON<Variable[]>(v, exists ? `${base}/${encodeURIComponent(argv.name)}` : base, {
-		method: exists ? 'PUT' : 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(exists ? { value } : body),
-	});
+	const data = exists
+		? await v.request(`${base}/${encodeURIComponent(argv.name)}` as const, { method: 'PUT', body: { value } })
+		: await v.request(base, { method: 'POST', body });
 	if (argv.json) {
 		printJSON(data);
 		return;
