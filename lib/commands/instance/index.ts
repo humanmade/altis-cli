@@ -73,16 +73,19 @@ const handler = async (argv: CliArguments) => {
 		if (action !== 'set') {
 			throw new Error('Usage: altis-cli instance maintenance <get|set> <instance>');
 		}
-		requireArg(argv.contact, '--contact <email> is required.');
-		const data = await v.request(url, {
+		const email = argv.contact?.trim();
+		requireArg(email, '--contact <email> is required.');
+		const current = await v.request(url);
+		const alreadyPresent = current.contacts.some(contact => contact.email.toLowerCase() === email.toLowerCase());
+		const data = alreadyPresent ? current : await v.request(url, {
 			method: 'PATCH',
-			body: { contacts: [{ email: argv.contact }] },
+			body: { contacts: [...current.contacts, { email }] },
 		});
 		if (argv.json) {
 			printJSON(data);
 			return;
 		}
-		console.log(chalk.green('Maintenance details updated.'));
+		console.log(chalk.green(alreadyPresent ? 'Maintenance contact already present.' : 'Maintenance details updated.'));
 		return;
 	}
 
@@ -155,7 +158,7 @@ export default {
 	describe: 'Instance commands',
 	builder: (yargs: CommandBuilder) => yargs
 		.option('role', { choices: ['user', 'developer'], default: 'user', describe: 'Access role.' })
-		.option('contact', { type: 'string', describe: 'Maintenance contact.' })
+		.option('contact', { type: 'string', describe: 'Maintenance contact email to add.' })
 		.option('yes', { type: 'boolean', describe: 'Skip confirmation.' })
 		.option('json', { type: 'boolean', describe: 'Print JSON output.' }),
 	handler,

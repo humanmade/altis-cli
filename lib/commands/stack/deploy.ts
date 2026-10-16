@@ -11,7 +11,7 @@ function deploy( vantage: Vantage, stack: string, force = false, buildId: string
 
 	console.log( `Deploying ${stack}...` );
 
-	return vantage.requestRaw( `stack/applications/${stack}/deploys`, { method: 'POST', query: { stream: true, force, build: buildId || undefined } } ).then( resp => {
+	return vantage.requestRaw( `stack/applications/${stack}/deploys`, { method: 'POST', query: { stream: true, force: force || undefined, build: buildId || undefined } } ).then( resp => {
 		if ( ! resp.ok ) {
 			return resp.json().then( data => {
 				// If this isn't a WP error, fall back to using the text instead.

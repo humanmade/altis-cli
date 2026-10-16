@@ -75,7 +75,7 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `access add <instance> <email>` - Add or invite a user. Example: `altis-cli instance access add example-dev-01 user@example.com --role developer`
 	* `access remove <instance> <user-id>` - Remove a user. Example: `altis-cli instance access remove example-dev-01 42 --yes`
 	* `maintenance get <instance>` - Show maintenance details. Example: `altis-cli instance maintenance get example-dev-01`
-	* `maintenance set <instance>` - Update maintenance contact. Example: `altis-cli instance maintenance set example-dev-01 --contact ops@example.com`
+	* `maintenance set <instance>` - Add a maintenance contact, preserving existing contacts and ignoring duplicates. Example: `altis-cli instance maintenance set example-dev-01 --contact ops@example.com`
 	* `reports <instance>` - List reports. Example: `altis-cli instance reports example-dev-01`
 
 ## Releasing
