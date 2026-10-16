@@ -41,9 +41,6 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `tasks` - List, cancel, or stream running tasks. Example: `altis-cli app tasks example-dev-01`
 	* `tasks cancel <id>` - Cancel a running task. Example: `altis-cli app tasks cancel <id> --yes`
 	* `tasks logs <id>` - Stream logs for a running task. Example: `altis-cli app tasks logs <id>`
-	* `database tunnel [stack]` - Forward a local port to the primary database.
-	* `database cli [stack]` - Open the local `mysql` client through a tunnel.
-	* `database sequel [stack]` - Open Sequel Ace/Sequel Pro through a tunnel (macOS).
 	* `database-tables [stack]` - List database tables. Example: `altis-cli app database-tables example-dev-01`
 	* `uploads-prefixes [stack]` - List uploads prefixes. Example: `altis-cli app uploads-prefixes example-dev-01`
 	* `import database <target> --from <source>` - Import database from another app. Example: `altis-cli app import database example-dev-01 --from example-stag-01`
@@ -145,34 +142,3 @@ npm test
 CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
 live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
 `fetchJSON<T>()` describes expected API responses without validating them at runtime.
-
-### Database connections
-
-```sh
-altis-cli app database tunnel example-dev-01 --port 3307
-altis-cli app database cli example-dev-01 --port 3307
-altis-cli app database sequel example-dev-01 --port 3307
-```
-
-All three commands create an SSM tunnel to the application's primary database,
-listening on `127.0.0.1`. Omit the stack argument to select an application
-interactively. `--port` defaults to 3306. Closing the client or pressing Ctrl-C
-closes the tunnel and requests remote session termination from Vantage.
-
-`tunnel` keeps the connection open for your own database client and credentials.
-`cli` launches the local `mysql` executable with the terminal attached.
-`sequel` opens Sequel Ace or Sequel Pro on macOS, matching local-server's
-`composer server db sequel` naming. Keep the terminal running while the GUI is
-connected. The current transport supports one client connection per session.
-
-`cli` and `sequel` obtain credentials from the existing database-server endpoint;
-they require an account allowed to retrieve those credentials. Passwords are
-written to private temporary files, removed when the command ends, and excluded
-from process arguments and environment variables.
-
-These commands require the creation and cleanup endpoints in
-[Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547), plus the
-binary socket and handshake API in `@humanmade/ssm` 0.0.4, included as a
-dependency. The transport has passed live SSM/MySQL tests with TLS, large
-results, and binary data. The deployed Vantage endpoints, complete database
-commands, and Sequel GUI still need end-to-end validation before production use.
