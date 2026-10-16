@@ -172,8 +172,7 @@ from process arguments and environment variables.
 
 These commands require the creation and cleanup endpoints in
 [Vantage #1547](https://github.com/humanmade/vantage-backend/pull/1547), plus the
-binary socket and handshake API from
-[humanmade/ssm#2](https://github.com/humanmade/ssm/pull/2). Published SSM 0.0.3
-currently lacks that API; the commands report this before creating a remote
-session. Dependency integration and a real SSM/MySQL test remain necessary
-before production use.
+binary socket and handshake API in `@humanmade/ssm` 0.0.4, included as a
+dependency. The transport has passed live SSM/MySQL tests with TLS, large
+results, and binary data. The deployed Vantage endpoints, complete database
+commands, and Sequel GUI still need end-to-end validation before production use.

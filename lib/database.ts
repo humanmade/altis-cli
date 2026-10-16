@@ -25,7 +25,7 @@ function sessionFactory(): SessionFactory {
 	const Session = pkg.default;
 	const prototype = Session.prototype as unknown as Partial<PortSession>;
 	if (typeof prototype.writeRaw !== 'function' || typeof prototype.sendHandshakeResponse !== 'function') {
-		throw new Error('Database tunnels require @humanmade/ssm socket support (humanmade/ssm#2); the installed version does not support it.');
+		throw new Error('Database tunnels require the socket support in @humanmade/ssm 0.0.4 or newer; the installed version does not support it.');
 	}
 	return (url, id, token) => new Session(url, id, token) as unknown as PortSession;
 }

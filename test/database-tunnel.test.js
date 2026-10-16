@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { EventEmitter, once } from 'node:events';
 import net from 'node:net';
 import test from 'node:test';
+import pkg from '@humanmade/ssm';
 import { forwardSession, parseSession } from '../dist/lib/database-tunnel.js';
 import command from '../dist/lib/commands/stack/database/tunnel.js';
 
@@ -42,8 +43,20 @@ test('validates session input without echoing credentials in errors', () => {
   }
 });
 
-test('published SSM reports missing port support before requesting a session or opening a socket', async () => {
-  await assert.rejects(command.handler({ config: {}, port: 3306 }), /socket support/);
+test('installed SSM provides the binary socket and handshake APIs', () => {
+  assert.equal(typeof pkg.default.prototype.writeRaw, 'function');
+  assert.equal(typeof pkg.default.prototype.sendHandshakeResponse, 'function');
+});
+
+test('an older SSM reports missing port support before requesting a session or opening a socket', async () => {
+  const prototype = pkg.default.prototype;
+  const original = Object.getOwnPropertyDescriptor(prototype, 'writeRaw');
+  try {
+    delete prototype.writeRaw;
+    await assert.rejects(command.handler({ config: {}, port: 3306 }), /socket support/);
+  } finally {
+    Object.defineProperty(prototype, 'writeRaw', original);
+  }
 });
 
 test('validates local port before requesting a session', async () => {
