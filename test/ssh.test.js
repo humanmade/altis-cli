@@ -45,6 +45,17 @@ test('SSH escape sequence closes the active session', async () => {
 	assert.equal(closed, true);
 });
 
+test('SSH input preserves UTF-8 characters split across terminal chunks', async () => {
+	const input = new PassThrough();
+	const writes = [];
+	const detach = attachSessionInput({ write: value => writes.push(value), close() {} }, input, new PassThrough());
+	const text = 'café 日本語 🐙\r';
+	for (const byte of Buffer.from(text)) input.write(Buffer.from([byte]));
+	await new Promise(resolve => setImmediate(resolve));
+	detach();
+	assert.equal(writes.join(''), text);
+});
+
 test('SSH keepalive pings the active session', () => {
 	let callback;
 	let pings = 0;

@@ -5,6 +5,7 @@ import pkg from '@humanmade/ssm';
 const AWSSSMSession = pkg.default;
 import { getStack } from './util.ts';
 import Vantage from '../../vantage.ts';
+import { StringDecoder } from 'node:string_decoder';
 
 // Keep the socket alive by pinging every 30s.
 const IDLE_INTERVAL = 30_000;
@@ -15,10 +16,12 @@ export function attachSessionInput( session: Pick<InstanceType<typeof AWSSSMSess
 	let lastWasNewline = true;
 	let startedSshControl = false;
 	const wasRaw = Boolean( input.isRaw );
+	const decoder = new StringDecoder( 'utf8' );
 
 	const listener = (data: Buffer) => {
 		let msg = '';
-		for ( const byte of data.values() ) {
+		for ( const char of decoder.write( data ) ) {
+			const byte = char.codePointAt( 0 );
 			// ~ byte, indicates start of control code.
 			if ( lastWasNewline && byte === 0x7E && !startedSshControl ) {
 				startedSshControl = true;
@@ -27,8 +30,6 @@ export function attachSessionInput( session: Pick<InstanceType<typeof AWSSSMSess
 
 			// Check for newlines (LF or CR).
 			lastWasNewline = byte === 0x0A || byte === 0x0D;
-
-			const char = String.fromCharCode( byte );
 			if ( startedSshControl ) {
 				startedSshControl = false;
 				// ~.  - terminate connection (and any multiplexed sessions)

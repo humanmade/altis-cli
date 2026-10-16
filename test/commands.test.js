@@ -14,7 +14,7 @@ const commands = [
 	['import', 'database', 'example-dev'], ['sync-local', 'all', 'example-dev'],
 	['sync-local', 'database', 'example-dev'], ['sync-local', 'uploads', 'example-dev'],
 	['xray', 'list-traces'], ['xray', 'trace', 'trace-id'], ['xray', 'trace-file', 'trace.json'],
-	['ssh'], ['scp', 'app:/tmp/file', './file'],
+	['database', 'tunnel'], ['database', 'cli'], ['database', 'sequel'], ['ssh'], ['scp', 'app:/tmp/file', './file'],
 ];
 
 test('application resolver retains the existing stack argument', async () => {

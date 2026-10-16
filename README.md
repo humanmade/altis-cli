@@ -41,6 +41,9 @@ Always use `altis-cli help` for the most up-to-date list of commands.
 	* `tasks` - List, cancel, or stream running tasks. Example: `altis-cli app tasks example-dev-01`
 	* `tasks cancel <id>` - Cancel a running task. Example: `altis-cli app tasks cancel <id> --yes`
 	* `tasks logs <id>` - Stream logs for a running task. Example: `altis-cli app tasks logs <id>`
+	* `database tunnel [stack]` - Forward a local port to the primary database.
+	* `database cli [stack]` - Open the local `mysql` client through a tunnel.
+	* `database sequel [stack]` - Open Sequel Ace/Sequel Pro through a tunnel (macOS).
 	* `database-tables [stack]` - List database tables. Example: `altis-cli app database-tables example-dev-01`
 	* `uploads-prefixes [stack]` - List uploads prefixes. Example: `altis-cli app uploads-prefixes example-dev-01`
 	* `import database <target> --from <source>` - Import database from another app. Example: `altis-cli app import database example-dev-01 --from example-stag-01`

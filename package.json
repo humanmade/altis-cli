@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@automattic/vip-search-replace": "^2.0.0",
-    "@humanmade/ssm": "^0.0.3",
+    "@humanmade/ssm": "^0.0.4",
     "ansi-escapes": "^2.0.0",
     "application-config": "^1.0.1",
     "base64-stream": "^1.0.0",
