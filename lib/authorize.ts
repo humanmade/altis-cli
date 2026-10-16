@@ -12,7 +12,7 @@ interface AuthorizationOptions {
 	port: number;
 	render: (title: string, message?: string) => string;
 }
-class Authenticator {
+export class Authenticator {
 	options: AuthorizationOptions;
 	server: http.Server;
 	state: string;
@@ -33,7 +33,7 @@ class Authenticator {
 		};
 
 		const url = `${ this.options.endpoints.authorize }&${ qs.stringify( params ) }`;
-		open( url );
+		return open( url );
 	}
 
 	exchangeCode( code: string ) {
@@ -45,6 +45,7 @@ class Authenticator {
 			client_secret: this.options.secret,
 		};
 		const opts = {
+			signal: AbortSignal.timeout( 30_000 ),
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -52,14 +53,19 @@ class Authenticator {
 			body: qs.stringify( params ),
 		};
 		return fetch( this.options.endpoints.exchange, opts )
-			.then( resp => resp.json() )
+			.then( async resp => {
+				if ( ! resp.ok ) throw new Error( `OAuth token exchange failed (HTTP ${ resp.status }).` );
+				try { return await resp.json(); }
+				catch { throw new Error( 'OAuth token exchange returned invalid JSON.' ); }
+			} )
 			.then( data => {
-				const token = (data as { access_token: string }).access_token;
+				const token = data && typeof data === 'object' && 'access_token' in data ? data.access_token : undefined;
+				if ( typeof token !== 'string' || ! token.trim() ) throw new Error( 'OAuth token exchange did not return an access token.' );
 				return token;
 			} );
 	}
 
-	handleRequest( req: http.IncomingMessage, res: http.ServerResponse ) {
+	async handleRequest( req: http.IncomingMessage, res: http.ServerResponse ) {
 		const params = new URL( req.url || '/', `http://localhost:${ this.options.port }` ).searchParams;
 		const states = params.getAll( 'state' );
 		const code = params.getAll( 'code' ).join( ',' );
@@ -69,18 +75,24 @@ class Authenticator {
 		if ( states.length !== 1 || states[0] !== this.state ) {
 			res.writeHead( 400 );
 			res.end( this.options.render( 'Invalid state parameter.' ) );
-			return Promise.resolve( null );
+			return null;
 		}
 		if ( ! code ) {
 			res.writeHead( 400 );
 			res.end( this.options.render( 'Missing code parameter.' ) );
-			return Promise.resolve( null );
+			return null;
 		}
 
-		res.writeHead( 200 );
-		res.end( this.options.render( 'Authenticated altis-cli!', 'You can now close this window and go back to your terminal.' ) );
-
-		return this.exchangeCode( code );
+		try {
+			const token = await this.exchangeCode( code );
+			res.writeHead( 200 );
+			res.end( this.options.render( 'Authenticated altis-cli!', 'You can now close this window and go back to your terminal.' ) );
+			return token;
+		} catch ( error ) {
+			res.writeHead( 502 );
+			res.end( this.options.render( 'Authentication failed.', 'Token exchange failed. See your terminal for details.' ) );
+			throw error;
+		}
 	}
 
 	start() {
@@ -100,12 +112,12 @@ class Authenticator {
 					reject( new Error( `Port ${ this.options.port } is already in use.` ) );
 					return;
 				}
+				reject( err );
 			} );
 
-			this.server.listen( this.options.port, () => this.startAuthorization() );
+			this.server.listen( this.options.port, () => { this.startAuthorization().catch( reject ); } );
 		} );
-		this.promise.then( () => this.server.close() );
-		this.promise.catch( err => this.server.close() );
+		void this.promise.then( () => this.server.close(), () => this.server.close() );
 		return this.promise;
 	}
 }
