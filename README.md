@@ -142,3 +142,50 @@ npm test
 CLI endpoint additions live in `lib/types/api.ts`; X-Ray summaries and statistics
 live in `lib/types/xray.ts`. Neither builds nor installs require a frontend checkout.
 `fetchJSON<T>()` describes expected API responses without validating them at runtime.
+
+### Project environments
+
+Add a shared environment mapping to your project's `composer.json`:
+
+```json
+{
+  "extra": {
+    "altis": {
+      "cli": {
+        "instance": "example",
+        "environments": {
+          "development": "example-dev",
+          "staging": "example-stag",
+          "production": "example-prod"
+        }
+      }
+    }
+  }
+}
+```
+
+The CLI finds the nearest `composer.json` by walking up from the current directory.
+Use `--env staging` to resolve the app automatically:
+
+```sh
+altis-cli app logs --env staging --type php --tail
+altis-cli app deploy --env staging
+altis-cli app variables list --env staging --type app
+altis-cli app sync-local database --env staging
+altis-cli app import database --env staging --from example-prod
+altis-cli instance reports
+```
+
+An explicit app argument always wins. Otherwise, `--env` selects from the mapping.
+Without `--env`, a single mapped environment is used automatically; multiple
+mapped environments prompt for a choice on every invocation. Selections are not
+remembered. Choose “Show all apps” to open the full Vantage app picker.
+Scripts must pass `--env` or an explicit app when multiple environments
+are configured.
+Outside a configured project, the existing app picker remains available.
+
+For imports, the project environment resolves the **target**, while `--from`
+remains explicit. Instance commands use `extra.altis.cli.instance` when their
+instance argument is omitted, or infer it from the selected app's Vantage metadata.
+Explicit instance arguments still win. SCP continues to use its explicit remote
+host in `app:/path` arguments. Help and version do not load project configuration.

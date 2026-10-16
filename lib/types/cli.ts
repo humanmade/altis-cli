@@ -19,6 +19,7 @@ export interface CliArguments {
 	group?: string;
 	force?: boolean;
 	app?: string;
+	env?: string;
 	stack?: string;
 	action?: string;
 	admin?: boolean;

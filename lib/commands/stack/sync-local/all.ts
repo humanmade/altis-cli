@@ -1,3 +1,5 @@
+import { readProjectContext } from '../../../project-context.ts';
+import { getApp } from '../util.ts';
 import { errorMessage } from '../../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.ts';
 import chalk from 'chalk';
@@ -33,7 +35,6 @@ import {
 
 const handler = async function ( argv: CliArguments ) {
 	const {
-		app = '',
 		config,
 		path: pathOpt,
 		uploadsPath,
@@ -52,8 +53,7 @@ const handler = async function ( argv: CliArguments ) {
 		skipPostSync,
 	} = argv;
 
-	const localPath = pathOpt || process.cwd();
-	const v = new Vantage( config );
+	const localPath = pathOpt || readProjectContext()?.root || process.cwd();
 
 	// --dry-run-search-replace: just print mappings, no validation or network needed
 	if ( dryRunSearchReplace ) {
@@ -74,6 +74,9 @@ const handler = async function ( argv: CliArguments ) {
 		}
 		return;
 	}
+
+	const app = await getApp(argv);
+	const v = new Vantage( config );
 
 	// Validate local project
 	const spinner = ora( 'Validating local project…' ).start();
@@ -287,7 +290,7 @@ const handler = async function ( argv: CliArguments ) {
 };
 
 export default {
-	command: 'all <app>',
+	command: 'all [app]',
 	describe: 'Sync database and uploads from a remote Altis Dashboard app into local-server.',
 	builder: (cmd: CommandBuilder) => {
 		addCommonOptions( cmd );

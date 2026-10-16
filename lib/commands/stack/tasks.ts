@@ -1,3 +1,4 @@
+import { resolveProjectApp } from '../../project-context.ts';
 import type { RunningTasksResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
@@ -28,13 +29,14 @@ const handler = async (argv: CliArguments) => {
 		if (!argv.id) {
 			throw new Error('Usage: altis-cli app tasks logs <id>');
 		}
-		const app = argv.app || argv.stack || String(argv.id).split('/')[0];
+		const app = argv.app || argv.stack || (argv.env ? await resolveProjectApp(argv) : undefined) || String(argv.id).split('/')[0];
 		streamLog(v, app, argv.id, argv.debug);
 		return;
 	}
 
+	const app = argv.action || await resolveProjectApp(argv);
 	const tasks = await fetchJSON<RunningTasksResponse[]>(v, 'stack/running-tasks');
-	const filtered = argv.action ? tasks.filter(task => task.application === argv.action) : tasks;
+	const filtered = app ? tasks.filter(task => task.application === app) : tasks;
 	if (argv.json) {
 		printJSON(filtered);
 		return;

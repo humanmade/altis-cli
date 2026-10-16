@@ -1,3 +1,4 @@
+import { readProjectContext, resolveProjectApp } from '../../project-context.ts';
 import { errorCode } from '../../types/errors.ts';
 import type { InstanceAccessRow, InstanceReport, InstanceResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
@@ -12,7 +13,20 @@ function requireArg(value: unknown, message: string): asserts value {
 }
 
 const handler = async (argv: CliArguments) => {
-	const { group, action, id, value } = argv;
+	let { group, action, id, value } = argv;
+	if ((group === 'info' || group === 'reports') && !action || (group === 'maintenance' || group === 'access') && !id) {
+		const project = readProjectContext();
+		let instance = project?.instance;
+		if (!instance) {
+			const app = await resolveProjectApp(argv);
+			if (app) {
+				const application = await fetchJSON<import('../../types/api.ts').ApplicationResponse>(new Vantage(argv.config), `stack/applications/${app}`);
+				instance = application['altis-instance'] || undefined;
+			}
+		}
+		if (group === 'info' || group === 'reports') action = instance;
+		else id = instance;
+	}
 	const v = new Vantage(argv.config);
 
 	if (!group || group === 'list') {

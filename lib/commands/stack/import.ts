@@ -2,18 +2,19 @@ import type { ImportSession, TaskResult } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { fetchJSON, parseList, parseReplacements, streamLog } from './util.ts';
+import { fetchJSON, getApp, parseList, parseReplacements, streamLog } from './util.ts';
 import Vantage from '../../vantage.ts';
 
 const handler = async (argv: CliArguments) => {
-	const { type, target } = argv;
-	if (!type || !['database', 'uploads'].includes(type) || !target) {
+	const { type } = argv;
+	if (!type || !['database', 'uploads'].includes(type) ) {
 		throw new Error('Usage: altis-cli app import <database|uploads> <target-app> --from <source-app>');
 	}
 	if (!argv.from && !argv.resume) {
 		throw new Error('--from <source-app> is required.');
 	}
 
+	const target = await getApp({ ...argv, app: argv.target });
 	const v = new Vantage(argv.config);
 	const route = type === 'database' ? 'import-database' : 'import-uploads';
 
@@ -79,7 +80,7 @@ const handler = async (argv: CliArguments) => {
 };
 
 export default {
-	command: 'import <type> <target>',
+	command: 'import <type> [target]',
 	describe: 'Import database or uploads from another application.',
 	builder: (yargs: CommandBuilder) => yargs
 		.option('from', { type: 'string', describe: 'Source application id.' })

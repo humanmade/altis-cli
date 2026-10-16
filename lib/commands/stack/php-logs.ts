@@ -1,3 +1,4 @@
+import { getApp } from './util.ts';
 import { tailStream } from '../../log-tail.ts';
 import type { LogResponse } from '../../types/api.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../types/cli.ts';
@@ -6,8 +7,9 @@ import ora from 'ora';
 import { stringify } from 'querystring';
 import Vantage from '../../vantage.ts';
 
-const handler = function (argv: CliArguments) {
-	const { config, stack, before, after } = argv;
+const handler = async function (argv: CliArguments) {
+	const { config, before, after } = argv;
+	const stack = await getApp(argv);
 	const v = new Vantage(config);
 	const status = ora(`Fetching PHP Logs for ${stack}`);
 	status.start();

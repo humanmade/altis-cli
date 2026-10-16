@@ -1,3 +1,4 @@
+import { resolveProjectApp } from '../../project-context.ts';
 import type { Options as TableOptions } from 'columnify';
 import type { RequestInit } from 'node-fetch';
 import type { CliArguments, CommandBuilder } from '../../types/cli.ts';
@@ -25,9 +26,9 @@ interface LogStatus {
 const INDENT = chalk.dim( '→ ' );
 const PROGRESS_WIDTH = 5;
 
-export function getStack(argv: Pick<CliArguments, 'app' | 'stack'> & Partial<Pick<CliArguments, 'config'>>): Promise<string> {
+export async function getStack(argv: Pick<CliArguments, 'app' | 'stack' | 'env'> & Partial<Pick<CliArguments, 'config'>>): Promise<string> {
 	const { config } = argv;
-	const stack = argv.stack;
+	const stack = await resolveProjectApp(argv);
 
 	if ( stack ) {
 		return Promise.resolve( stack );

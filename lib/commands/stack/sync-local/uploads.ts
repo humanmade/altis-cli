@@ -1,3 +1,5 @@
+import { readProjectContext } from '../../../project-context.ts';
+import { getApp } from '../util.ts';
 import { errorMessage } from '../../../types/errors.ts';
 import type { CliArguments, CommandBuilder, CommandDefinition } from '../../../types/cli.ts';
 import chalk from 'chalk';
@@ -28,7 +30,6 @@ import {
 
 const handler = async function ( argv: CliArguments ) {
 	const {
-		app = '',
 		config,
 		path: pathOpt,
 		uploadsPath,
@@ -57,7 +58,8 @@ const handler = async function ( argv: CliArguments ) {
 		}
 	}
 
-	const localPath = pathOpt || process.cwd();
+	const localPath = pathOpt || readProjectContext()?.root || process.cwd();
+	const app = await getApp(argv);
 	const v = new Vantage( config );
 
 	// Validate local project
@@ -194,7 +196,7 @@ const handler = async function ( argv: CliArguments ) {
 };
 
 export default {
-	command: 'uploads <app>',
+	command: 'uploads [app]',
 	describe: 'Sync uploads from a remote Altis Dashboard app into local-server.',
 	builder: (cmd: CommandBuilder) => {
 		addCommonOptions( cmd );
