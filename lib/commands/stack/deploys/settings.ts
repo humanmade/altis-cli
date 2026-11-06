@@ -1,8 +1,9 @@
 import { parseBoolean } from '../../../boolean.ts';
 import type { CliArguments, CommandDefinition } from '../../../types/cli.ts';
-import type { Deployment } from '../../../types/rest-api.ts';
+import type { ApplicationResponse, Deployment } from '../../../types/rest-api.ts';
+import chalk from 'chalk';
 import Vantage from '../../../vantage.ts';
-import { fetchJSON, getApp, printJSON, printTable } from '../util.ts';
+import { confirm, fetchJSON, getApp, printJSON, printTable } from '../util.ts';
 
 type DeploymentSettings = Pick<Deployment, 'is_autoupdating' | 'ref'>;
 const settingNames = ['autodeploy', 'branch'] as const;
@@ -40,7 +41,8 @@ export default {
 				describe: 'Update supplied deployment settings.',
 				builder: command => command
 					.positional('name', { type: 'string', choices: settingNames })
-					.positional('value', { type: 'string', describe: 'Branch name, or true/false, 1/0, yes/no, or on/off for autodeploy.' }),
+					.positional('value', { type: 'string', describe: 'Branch name, or true/false, 1/0, yes/no, or on/off for autodeploy.' })
+					.option('yes', { type: 'boolean', describe: 'Skip confirmation when enabling autodeploy on production.' }),
 				handler: async argv => {
 					const value = argv.value!.trim();
 					// Treat quote-only values such as '' (from over-quoting in the shell) as empty.
@@ -49,7 +51,16 @@ export default {
 						? { ref: value }
 						: { is_autoupdating: parseBoolean(value) };
 					const app = await getApp(argv);
-					await fetchJSON<DeploymentSettings>(new Vantage(argv.config), `stack/applications/${encodeURIComponent(app)}/deployment`, {
+					const vantage = new Vantage(argv.config);
+					// The Dashboard blocks enabling autodeploy on production, so ask before doing it here.
+					if (body.is_autoupdating && !argv.yes) {
+						const application = await fetchJSON<Pick<ApplicationResponse, 'environment-type'>>(vantage, `stack/applications/${encodeURIComponent(app)}`);
+						if (application['environment-type'] === 'production' && !await confirm(`${app} is a production environment. Enable autodeploy anyway?`)) {
+							console.log(chalk.yellow('Cancelled.'));
+							return;
+						}
+					}
+					await fetchJSON<DeploymentSettings>(vantage, `stack/applications/${encodeURIComponent(app)}/deployment`, {
 						method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
 					});
 					console.log(argv.name === 'branch'

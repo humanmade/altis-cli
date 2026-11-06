@@ -20,6 +20,7 @@ test('autodeploy settings list/get read the deployment field and update only the
  t.mock.method(console, 'log', value => output.push(value));
  t.mock.method(Vantage.prototype, 'fetch', async (url, options) => {
   requests.push({ url, options });
+  if (!url.endsWith('/deployment')) return new Response(JSON.stringify({ 'environment-type': 'staging' }));
   return new Response(JSON.stringify({ is_autoupdating: false, ref: 'main' }));
  });
  const config = { get: () => undefined };
@@ -32,7 +33,8 @@ test('autodeploy settings list/get read the deployment field and update only the
   assert.equal(requests.at(-1).options.method, 'POST');
   assert.deepEqual(JSON.parse(requests.at(-1).options.body), { is_autoupdating: enabled });
  }
- assert.ok(requests.every(request => request.url === 'stack/applications/example-prod/deployment'));
+ assert.ok(requests.every(request => ['stack/applications/example-prod', 'stack/applications/example-prod/deployment'].includes(request.url)));
+ assert.ok(requests.filter(request => request.options?.method === 'POST').every(request => request.url === 'stack/applications/example-prod/deployment'));
  await (await parser()).parseAsync(['app', 'deploys', 'settings', 'get', 'autodeploy', 'explicit-app'], { config });
  assert.equal(requests.at(-1).url, 'stack/applications/explicit-app/deployment');
  const before = requests.length;
@@ -46,8 +48,38 @@ test('autodeploy update reports API errors without claiming success', async t =>
  const output = [];
  t.mock.method(console, 'log', value => output.push(value));
  t.mock.method(Vantage.prototype, 'fetch', async () => new Response('{"message":"Forbidden"}', { status: 403 }));
- await assert.rejects((await parser()).parseAsync(['app', 'deploys', 'settings', 'update', 'autodeploy', 'true', 'example-prod'], { config: { get: () => undefined } }), /Forbidden/);
+ await assert.rejects((await parser()).parseAsync(['app', 'deploys', 'settings', 'update', 'autodeploy', 'true', 'example-prod', '--yes'], { config: { get: () => undefined } }), /Forbidden/);
  assert.deepEqual(output, []);
+});
+
+test('enabling autodeploy on production asks for confirmation unless --yes is passed', async t => {
+ const requests = [];
+ const answers = [];
+ t.mock.method(console, 'log', () => {});
+ const prompt = t.mock.method(inquirer, 'prompt', async () => ({ confirmed: answers.shift() }));
+ t.mock.method(Vantage.prototype, 'fetch', async (url, options) => {
+  requests.push({ url, method: options?.method || 'GET' });
+  if (url.endsWith('/deployment')) return new Response(JSON.stringify({ is_autoupdating: true, ref: 'main' }));
+  return new Response(JSON.stringify({ 'environment-type': 'production' }));
+ });
+ const config = { get: () => undefined };
+ const update = (...args) => parser().then(p => p.parseAsync(['app', 'deploys', 'settings', 'update', 'autodeploy', ...args], { config }));
+ const posts = () => requests.filter(request => request.method === 'POST').length;
+
+ answers.push(false);
+ await update('true', 'example-prod');
+ assert.equal(prompt.mock.calls.length, 1);
+ assert.equal(posts(), 0);
+
+ answers.push(true);
+ await update('true', 'example-prod');
+ assert.equal(prompt.mock.calls.length, 2);
+ assert.equal(posts(), 1);
+
+ await update('true', 'example-prod', '--yes');
+ await update('false', 'example-prod');
+ assert.equal(prompt.mock.calls.length, 2);
+ assert.equal(posts(), 3);
 });
 
 

@@ -164,5 +164,5 @@ it does not itself build or deploy the application.
 
 Autodeploy values accept `true`/`false`, `1`/`0`, `yes`/`no`, or `on`/`off
 (case-insensitive). Branch names must be non-empty. Updating requires application
-administration permission. Production apps can also have autodeploy enabled
-through this API, even though the dashboard disables their toggle.
+administration permission. Enabling autodeploy on a production app asks for
+confirmation first, since the dashboard disables that toggle; pass `--yes` to skip it.
