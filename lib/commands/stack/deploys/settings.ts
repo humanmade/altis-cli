@@ -43,7 +43,8 @@ export default {
 					.positional('value', { type: 'string', describe: 'Branch name, or true/false, 1/0, yes/no, or on/off for autodeploy.' }),
 				handler: async argv => {
 					const value = argv.value!.trim();
-					if (argv.name === 'branch' && !value) throw new Error('Branch must be a non-empty name.');
+					// Treat quote-only values such as '' (from over-quoting in the shell) as empty.
+					if (argv.name === 'branch' && !value.replace(/['"\s]/g, '')) throw new Error('Branch must be a non-empty name.');
 					const body: Partial<DeploymentSettings> = argv.name === 'branch'
 						? { ref: value }
 						: { is_autoupdating: parseBoolean(value) };

@@ -88,7 +88,9 @@ test('branch settings read the configured ref and update only that field', async
   assert.equal(output.at(-1), `Deployment branch set to ${branch} for example-prod.`);
  }
  const before = requests.length;
- await assert.rejects((await parser()).parseAsync(['app', 'deploys', 'settings', 'update', 'branch', '   ', 'example-prod'], { config }), /Branch must be a non-empty name/);
+ for (const empty of ['', '   ', "''", '""', "' '"]) {
+  await assert.rejects((await parser()).parseAsync(['app', 'deploys', 'settings', 'update', 'branch', empty, 'example-prod'], { config }), /Branch must be a non-empty name/);
+ }
  await assert.rejects((await parser()).parseAsync(['app', 'deploys', 'settings', 'update', 'unknown', 'main', 'example-prod'], { config }));
  assert.equal(requests.length, before);
 });
